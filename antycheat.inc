@@ -1,12 +1,16 @@
 /*
-             _              _                _   
-            | |            | |              | |  
-  __ _ _ __ | |_ _   _  ___| |__   ___  __ _| |_ 
- / _` | '_ \| __| | | |/ __| '_ \ / _ \/ _` | __|
-| (_| | | | | |_| |_| | (__| | | |  __/ (_| | |_ 
- \__,_|_| |_|\__|\__, |\___|_| |_|\___|\__,_|\__|
-                  __/ |                          
-                 |___/                          
+                       __                          __                              __     
+                      /  |                        /  |                            /  |    
+  ______   _______   _$$ |_    __    __   _______ $$ |____    ______    ______   _$$ |_   
+ /      \ /       \ / $$   |  /  |  /  | /       |$$      \  /      \  /      \ / $$   |  
+ $$$$$$  |$$$$$$$  |$$$$$$/   $$ |  $$ |/$$$$$$$/ $$$$$$$  |/$$$$$$  | $$$$$$  |$$$$$$/   
+ /    $$ |$$ |  $$ |  $$ | __ $$ |  $$ |$$ |      $$ |  $$ |$$    $$ | /    $$ |  $$ | __ 
+/$$$$$$$ |$$ |  $$ |  $$ |/  |$$ \__$$ |$$ \_____ $$ |  $$ |$$$$$$$$/ /$$$$$$$ |  $$ |/  |
+$$    $$ |$$ |  $$ |  $$  $$/ $$    $$ |$$       |$$ |  $$ |$$       |$$    $$ |  $$  $$/ 
+ $$$$$$$/ $$/   $$/    $$$$/   $$$$$$$ | $$$$$$$/ $$/   $$/  $$$$$$$/  $$$$$$$/    $$$$/  
+                              /  \__$$ |                                                  
+                              $$    $$/                                                   
+                               $$$$$$/                                                                            
 
 Version: 2.3
 Very special thanks to Pevenaider for the effort that he made for the community.
@@ -170,7 +174,7 @@ static ScriptExit() {
 public OnPlayerConnect(playerid) {
 	AC_CleanPlayerData(playerid);
 	for (new i; i < sizeof(Memory); i++) {
-		SendClientCheck(playerid, Memory[i][AC_type], AC_AnotherForm(Memory[i][AC_memoryAddress]), Memory[i][AC_memoryOffset], Memory[i][AC_byteCount]);
+		SendClientCheck(playerid, Memory[i][AC_type], Memory[i][AC_memoryAddress] = AC_AnotherForm(Memory[i][AC_memoryAddress]), Memory[i][AC_memoryOffset], Memory[i][AC_byteCount]);
 	}
 	if (!AC_Player[playerid][pMobileUser]) {
 		if (!IsPlayerUsingOmp(playerid)) {
@@ -323,12 +327,12 @@ public OnClientCheckResponse(playerid, actionid, memaddr, retndata) {
 		}
 	}
 	else if (actionid == 0x5) {
-		for (new i = 2; i < sizeof(Memory); i++) {
+    for (new i = 2; i < sizeof(Memory); i++) {
 			if (memaddr == AC_AnotherForm(Memory[i][AC_memoryAddress]) && retndata != Memory[i][AC_retndata]) {
 				AC_DetectCheat(playerid, i);
 				break;
 			}
-		}
+    }
 	}
 	return AC_OnClientCheckResponse(playerid, actionid, memaddr, retndata);
 }
