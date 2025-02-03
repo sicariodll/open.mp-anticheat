@@ -134,8 +134,6 @@ CHAIN_FORWARD:AC_OnPlayerGiveDamage(playerid, damagedid, Float:amount, weaponid,
 #define Info(%0,%1) SendClientMessage(%0, 0xFFFF00AA, "[INFO] "%1)
 #define Error(%0,%1) SendClientMessage(%0, 0xFF0000FF, "[ERROR] "%1)
 
-#define MOBILE_CLIENT "ED40ED0E8089CC44C08EE9580F4C8C44EE8EE990"
-
 new const AC_Cheats[][] = {
 	{"S0beit"},
 	{"CLEO"},
@@ -232,7 +230,7 @@ public OnPlayerConnect(playerid) {
 		new version[24];
 		GetPlayerVersion(playerid, version, sizeof(version));
 		if (strcmp(version, "0.3.7") == 0) {
-			Error(playerid, "You should select an higher version that 0.3.7-R1!");
+			Error(playerid, "You should select an higher version than 0.3.7-R1!");
 			return AC_Kick(playerid);
 		}
 	}
@@ -420,7 +418,7 @@ public OnClientCheckResponse(playerid, actionid, memaddr, retndata) {
 }
 
 static AC_DetectCheat(playerid, cheat = -1) {
-	return CallLocalFunction("OnCheatDetected", "ii", playerid, cheat);
+	return CallLocalFunction("AC_OnCheatDetected", "ii", playerid, cheat);
 }
 
 forward AC_OnCheatDetected(playerid, cheat);
@@ -432,11 +430,11 @@ forward AC_OnCheatDetected(playerid, cheat) {
 }
 
 static AC_Kick(playerid) {
-	return SetTimerEx("DisconnectPlayer", 500, false, "i", playerid);
+	return SetTimerEx("AC_DisconnectPlayer", 500, false, "i", playerid);
 }
 
-forward DisconnectPlayer(playerid);
-public DisconnectPlayer(playerid) {
+forward AC_DisconnectPlayer(playerid);
+public AC_DisconnectPlayer(playerid) {
 	return Kick(playerid);
 }
 
