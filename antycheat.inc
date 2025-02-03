@@ -39,115 +39,25 @@ Contributors: sicario.dll (Everyone that contributed this project should sign he
 	#error colandreas.inc is required. (You must include it to use this include as well.)
 #endif
 
-// Pre-hooks for hooking callbacks
-#if !defined CHAIN_ORDER
-	#define CHAIN_ORDER() 0
+#if !defined AC_CHAIN_ORDER
+	#define AC_CHAIN_ORDER() 0
 #endif
 
-#define CHAIN_HOOK(%0) forward @CO_%0();public @CO_%0()return CHAIN_ORDER()+1;
-#define CHAIN_NEXT(%0) @CO_%0
+#define AC_CHAIN_HOOK(%0) forward @ACCO_%0();public @ACCO_%0(){return AC_CHAIN_ORDER()+1;}
+#define AC_CHAIN_NEXT(%0) @ACCO_%0
 
-#define CHAIN_PUBLIC:%0(%1) %0(%1) <_ALS : _ALS_go>
-#define CHAIN_FORWARD:%0_%2(%1)=%3; forward %0_%2(%1); public %0_%2(%1) <_ALS : _ALS_x0, _ALS : _ALS_x1> return (%3); public %0_%2(%1) <> return (%3);
+#define AC_CHAIN_PUBLIC:%0(%1) %0(%1) <_ALS : _ALS_go>
+#define AC_CHAIN_FORWARD:%0_%2(%1)=%3; forward %0_%2(%1); public %0_%2(%1) <_ALS : _ALS_x0, _ALS : _ALS_x1> return (%3); public %0_%2(%1) <> return (%3);
 
-CHAIN_HOOK(AC)
-#undef CHAIN_ORDER
-#define CHAIN_ORDER CHAIN_NEXT(AC)
+AC_CHAIN_HOOK(AC)
+#undef AC_CHAIN_ORDER
+#define AC_CHAIN_ORDER AC_CHAIN_NEXT(AC)
 
 static stock _AC_IncludeStates() <_ALS : _ALS_x0, _ALS : _ALS_x1, _ALS : _ALS_x2, _ALS : _ALS_x3> {}
 static stock _AC_IncludeStates() <_ALS : _ALS_go> {}
 
-#if defined _ALS_OnGameModeInit
-	#undef OnGameModeInit
-#else
-	#define _ALS_OnGameModeInit
-#endif
-#define OnGameModeInit(%0) CHAIN_PUBLIC:AC_OnGameModeInit(%0)
-CHAIN_FORWARD:AC_OnGameModeInit() = 1;
-
-#if defined _ALS_OnGameModeExit
-	#undef OnGameModeExit
-#else
-	#define _ALS_OnGameModeExit
-#endif
-#define OnGameModeExit(%0) CHAIN_PUBLIC:AC_OnGameModeExit(%0)
-CHAIN_FORWARD:AC_OnGameModeExit() = 1;
-
-#if defined _ALS_OnFilterScriptInit
-	#undef OnFilterScriptInit
-#else
-	#define _ALS_OnFilterScriptInit
-#endif
-#define OnFilterScriptInit(%0) CHAIN_PUBLIC:AC_OnFilterScriptInit(%0)
-CHAIN_FORWARD:AC_OnFilterScriptInit() = 1;
-
-
-#if defined _ALS_OnFilterScriptExit
-	#undef OnFilterScriptExit
-#else
-	#define _ALS_OnFilterScriptExit
-#endif
-#define OnFilterScriptExit(%0) CHAIN_PUBLIC:AC_OnFilterScriptExit(%0)
-CHAIN_FORWARD:AC_OnFilterScriptExit() = 1;
-
-#if defined _ALS_OnPlayerConnect
-	#undef OnPlayerConnect
-#else
-	#define _ALS_OnPlayerConnect
-#endif
-#define OnPlayerConnect(%0) CHAIN_PUBLIC:AC_OnPlayerConnect(%0)
-CHAIN_FORWARD:AC_OnPlayerConnect(playerid) = 1;
-
-#if defined _ALS_OnPlayerDisconnect
-	#undef OnPlayerDisconnect
-#else
-	#define _ALS_OnPlayerDisconnect
-#endif
-#define OnPlayerDisconnect(%0) CHAIN_PUBLIC:AC_OnPlayerDisconnect(%0)
-CHAIN_FORWARD:AC_OnPlayerDisconnect(playerid, reason) = 1;
-
-#if defined _ALS_OnPlayerUpdate
-	#undef OnPlayerUpdate
-#else
-	#define _ALS_OnPlayerUpdate
-#endif
-#define OnPlayerUpdate(%0) CHAIN_PUBLIC:AC_OnPlayerUpdate(%0)
-CHAIN_FORWARD:AC_OnPlayerUpdate(playerid) = 1;
-
-#if defined _ALS_OnPlayerSpawn
-	#undef OnPlayerSpawn
-#else
-	#define _ALS_OnPlayerSpawn
-#endif
-#define OnPlayerSpawn(%0) CHAIN_PUBLIC:AC_OnPlayerSpawn(%0)
-CHAIN_FORWARD:AC_OnPlayerSpawn(playerid) = 1;
-
-#if defined _ALS_OnClientCheckResponse
-	#undef OnClientCheckResponse
-#else
-	#define _ALS_OnClientCheckResponse
-#endif
-#define OnClientCheckResponse(%0) CHAIN_PUBLIC:AC_OnClientCheckResponse(%0)
-CHAIN_FORWARD:AC_OnClientCheckResponse(playerid, actionid, memaddr, retndata) = 1;
-
-#if defined _ALS_OnPlayerWeaponShot
-	#undef OnPlayerWeaponShot
-#else
-	#define _ALS_OnPlayerWeaponShot
-#endif
-#define OnPlayerWeaponShot(%0) CHAIN_PUBLIC:AC_OnPlayerWeaponShot(%0)
-CHAIN_FORWARD:AC_OnPlayerWeaponShot(playerid, WEAPON:weaponid, BULLET_HIT_TYPE:hittype, hitid, Float:fX, Float:fY, Float:fZ) = 1;
-
-#if defined _ALS_OnPlayerGiveDamage
-	#undef OnPlayerGiveDamage
-#else
-	#define _ALS_OnPlayerGiveDamage
-#endif
-#define OnPlayerGiveDamage(%0) CHAIN_PUBLIC:AC_OnPlayerGiveDamage(%0)
-CHAIN_FORWARD:AC_OnPlayerGiveDamage(playerid, damagedid, Float:amount, weaponid, bodypart) = 1;
-
-#define Info(%0,%1) SendClientMessage(%0, 0xFFFF00AA, "[INFO] "%1)
-#define Error(%0,%1) SendClientMessage(%0, 0xFF0000FF, "[ERROR] "%1)
+#define InfoMessage(%0,%1) SendClientMessage(%0, 0xFFFF00AA, "[INFO] "%1)
+#define ErrorMessage(%0,%1) SendClientMessage(%0, 0xFF0000FF, "[ERROR] "%1)
 
 new const AC_Cheats[][] = {
 	{"S0beit"},
@@ -225,22 +135,36 @@ public OnFilterScriptExit() {
 	return AC_OnFilterScriptExit();
 }
 
+static ScriptInit() {
+	print("---------------------Antycheat--------------------");
+	print("------------------ Version: 2.3 ------------------");
+	print("--------- Special thanks to: Pevenaider ----------");
+	print("--------- Succesfully loaded the script! ---------");
+}
+
+static ScriptExit() {
+	print("---------------------Antycheat--------------------");
+	print("------------------ Version: 2.3 ------------------");
+	print("--------- Special thanks to: Pevenaider ----------");
+	print("-------- Succesfully unloaded the script! --------");
+}
+
 public OnPlayerConnect(playerid) {
 	AC_CleanPlayerData(playerid);
 	for (new i; i < sizeof(Memory); i++) {
-		SendClientCheck(playerid, Memory[i][AC_type], Memory[i][AC_memoryAddress], Memory[i][AC_memoryOffset], Memory[i][AC_byteCount]);
+		SendClientCheck(playerid, Memory[i][AC_type], AnotherForm(Memory[i][AC_memoryAddress]), Memory[i][AC_memoryOffset], Memory[i][AC_byteCount]);
 	}
 	CallLocalFunction("OnClientCheckResponse", "iiii", playerid, 0x47, 0xCECECE, 256);
     CallLocalFunction("OnClientCheckResponse", "iiii", playerid, 0x48, 0xDEDEDE, 256);
 	if (!AC_Player[playerid][pMobileUser]) {
 		if (!IsPlayerUsingOmp(playerid)) {
-			Error(playerid, "Computer players must use open.mp launcher to play on this server.");
+			ErrorMessage(playerid, "Computer players must use open.mp launcher to play on this server.");
 			return AC_Kick(playerid);
 		}
 		new version[24];
 		GetPlayerVersion(playerid, version, sizeof(version));
 		if (strcmp(version, "0.3.7") == 0) {
-			Error(playerid, "You should select an higher version than 0.3.7-R1!");
+			ErrorMessage(playerid, "You should select an higher version than 0.3.7-R1!");
 			return AC_Kick(playerid);
 		}
 	}
@@ -278,25 +202,11 @@ public OnPlayerWeaponShot(playerid, WEAPON:weaponid, BULLET_HIT_TYPE:hittype, hi
 	return AC_OnPlayerWeaponShot(playerid, WEAPON:weaponid, BULLET_HIT_TYPE:hittype, hitid, Float:fX, Float:fY, Float:fZ);
 }
 
-public OnPlayerGiveDamage(playerid, damagedid, Float:amount, weaponid, bodypart) {
+public OnPlayerGiveDamage(playerid, damagedid, Float:amount, WEAPON:weaponid, bodypart) {
 	if (AC_IsPlayerPaused(playerid)) {
 		return AC_DetectCheat(playerid, 8);
 	}
-	return AC_OnPlayerGiveDamage(playerid, damagedid, Float:amount, weaponid, bodypart);
-}
-
-static ScriptInit() {
-	print("---------------------Antycheat--------------------");
-	print("------------------ Version: 2.3 ------------------");
-	print("--------- Special thanks to: Pevenaider ----------");
-	print("--------- Succesfully loaded the script! ---------");
-}
-
-static ScriptExit() {
-	print("--------------------------------------------------");
-	print("------------------ Version: 2.3 ------------------");
-	print("--------- Special thanks to: Pevenaider ----------");
-	print("-------- Succesfully unloaded the script! --------");
+	return AC_OnPlayerGiveDamage(playerid, damagedid, Float:amount, WEAPON:weaponid, bodypart);
 }
 
 public OnIncomingRPC(playerid, rpcid, BitStream:bs) {
@@ -317,7 +227,7 @@ public OnIncomingRPC(playerid, rpcid, BitStream:bs) {
 	    BS_ReadUint16(bs, checksum);
 	    AC_Player[playerid][pMobileUser] = (checksum == 0xBEEF) ? (true) : (false);
 	}
-    return true;
+    return AC_OnIncomingRPC(playerid, rpcid, BitStream:bs);
 }
 
 public OnIncomingPacket(playerid, packetid, BitStream:bs) {
@@ -370,7 +280,7 @@ public OnIncomingPacket(playerid, packetid, BitStream:bs) {
             }
         }
     }
-    return true;
+    return AC_OnIncomingPacket(playerid, packetid, BitStream:bs);
 }
 
 public OnClientCheckResponse(playerid, actionid, memaddr, retndata) {
@@ -419,8 +329,8 @@ static AC_DetectCheat(playerid, cheat = -1) {
 
 forward AC_OnCheatDetected(playerid, cheat);
 public AC_OnCheatDetected(playerid, cheat) {
-	Error(playerid, "System detected that you're probably using %s on this server.", AC_Cheats[cheat]);
-	Info(playerid, "If you're thinking that it's wrong, just try to contact an administrator.");
+	ErrorMessage(playerid, "System detected that you're probably using %s on this server.", AC_Cheats[cheat]);
+	InfoMessage(playerid, "If you're thinking that it's wrong, just try to contact an administrator.");
 	AC_Kick(playerid);
 	return true;
 }
@@ -444,3 +354,136 @@ static AC_CleanPlayerData(playerid) {
 	AC_Player[playerid][pLastUpdate] = 0;
 	return true;
 }
+
+static AnotherForm(input) {
+    new result;
+ 
+    #emit LOAD.S.pri input
+    #emit CONST.alt 0xFF
+    #emit AND
+    #emit CONST.alt 16
+    #emit SHL
+    #emit STOR.S.pri result
+ 
+    #emit LOAD.S.pri input
+    #emit CONST.alt 0xFF00
+    #emit AND
+    #emit LOAD.S.alt result
+    #emit ADD
+    #emit STOR.S.pri result
+ 
+    #emit LOAD.S.pri input
+    #emit CONST.alt 0xFF0000
+    #emit AND
+    #emit CONST.alt 16
+    #emit SHR
+    #emit LOAD.S.alt result
+    #emit ADD
+    #emit STOR.S.pri result
+
+    return result;
+}
+
+#if defined _ALS_OnIncomingRPC
+	#undef OnIncomingRPC
+#else
+	#define _ALS_OnIncomingRPC
+#endif
+#define OnIncomingRPC(%0) AC_CHAIN_PUBLIC:AC_OnIncomingRPC(%0)
+AC_CHAIN_FORWARD:AC_OnIncomingRPC(playerid, rpcid, BitStream:bs) = 1;
+
+#if defined _ALS_OnIncomingPacket
+	#undef OnIncomingPacket
+#else
+	#define _ALS_OnIncomingPacket
+#endif
+#define OnIncomingPacket(%0) AC_CHAIN_PUBLIC:AC_OnIncomingPacket(%0)
+AC_CHAIN_FORWARD:AC_OnIncomingPacket(playerid, packetid, BitStream:bs) = 1;
+
+#if defined _ALS_OnGameModeInit
+	#undef OnGameModeInit
+#else
+	#define _ALS_OnGameModeInit
+#endif
+#define OnGameModeInit(%0) AC_CHAIN_PUBLIC:AC_OnGameModeInit(%0)
+AC_CHAIN_FORWARD:AC_OnGameModeInit() = 1;
+
+#if defined _ALS_OnGameModeExit
+	#undef OnGameModeExit
+#else
+	#define _ALS_OnGameModeExit
+#endif
+#define OnGameModeExit(%0) AC_CHAIN_PUBLIC:AC_OnGameModeExit(%0)
+AC_CHAIN_FORWARD:AC_OnGameModeExit() = 1;
+
+#if defined _ALS_OnFilterScriptInit
+	#undef OnFilterScriptInit
+#else
+	#define _ALS_OnFilterScriptInit
+#endif
+#define OnFilterScriptInit(%0) AC_CHAIN_PUBLIC:AC_OnFilterScriptInit(%0)
+AC_CHAIN_FORWARD:AC_OnFilterScriptInit() = 1;
+
+#if defined _ALS_OnFilterScriptExit
+	#undef OnFilterScriptExit
+#else
+	#define _ALS_OnFilterScriptExit
+#endif
+#define OnFilterScriptExit(%0) AC_CHAIN_PUBLIC:AC_OnFilterScriptExit(%0)
+AC_CHAIN_FORWARD:AC_OnFilterScriptExit() = 1;
+
+#if defined _ALS_OnPlayerConnect
+	#undef OnPlayerConnect
+#else
+	#define _ALS_OnPlayerConnect
+#endif
+#define OnPlayerConnect(%0) AC_CHAIN_PUBLIC:AC_OnPlayerConnect(%0)
+AC_CHAIN_FORWARD:AC_OnPlayerConnect(playerid) = 1;
+
+#if defined _ALS_OnPlayerDisconnect
+	#undef OnPlayerDisconnect
+#else
+	#define _ALS_OnPlayerDisconnect
+#endif
+#define OnPlayerDisconnect(%0) AC_CHAIN_PUBLIC:AC_OnPlayerDisconnect(%0)
+AC_CHAIN_FORWARD:AC_OnPlayerDisconnect(playerid, reason) = 1;
+
+#if defined _ALS_OnPlayerUpdate
+	#undef OnPlayerUpdate
+#else
+	#define _ALS_OnPlayerUpdate
+#endif
+#define OnPlayerUpdate(%0) AC_CHAIN_PUBLIC:AC_OnPlayerUpdate(%0)
+AC_CHAIN_FORWARD:AC_OnPlayerUpdate(playerid) = 1;
+
+#if defined _ALS_OnPlayerSpawn
+	#undef OnPlayerSpawn
+#else
+	#define _ALS_OnPlayerSpawn
+#endif
+#define OnPlayerSpawn(%0) AC_CHAIN_PUBLIC:AC_OnPlayerSpawn(%0)
+AC_CHAIN_FORWARD:AC_OnPlayerSpawn(playerid) = 1;
+
+#if defined _ALS_OnClientCheckResponse
+	#undef OnClientCheckResponse
+#else
+	#define _ALS_OnClientCheckResponse
+#endif
+#define OnClientCheckResponse(%0) AC_CHAIN_PUBLIC:AC_OnClientCheckResponse(%0)
+AC_CHAIN_FORWARD:AC_OnClientCheckResponse(playerid, actionid, memaddr, retndata) = 1;
+
+#if defined _ALS_OnPlayerWeaponShot
+	#undef OnPlayerWeaponShot
+#else
+	#define _ALS_OnPlayerWeaponShot
+#endif
+#define OnPlayerWeaponShot(%0) AC_CHAIN_PUBLIC:AC_OnPlayerWeaponShot(%0)
+AC_CHAIN_FORWARD:AC_OnPlayerWeaponShot(playerid, WEAPON:weaponid, BULLET_HIT_TYPE:hittype, hitid, Float:fX, Float:fY, Float:fZ) = 1;
+
+#if defined _ALS_OnPlayerGiveDamage
+	#undef OnPlayerGiveDamage
+#else
+	#define _ALS_OnPlayerGiveDamage
+#endif
+#define OnPlayerGiveDamage(%0) AC_CHAIN_PUBLIC:AC_OnPlayerGiveDamage(%0)
+AC_CHAIN_FORWARD:AC_OnPlayerGiveDamage(playerid, damagedid, Float:amount, WEAPON:weaponid, bodypart) = 1;
