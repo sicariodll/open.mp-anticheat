@@ -174,7 +174,7 @@ static ScriptExit() {
 public OnPlayerConnect(playerid) {
 	AC_CleanPlayerData(playerid);
 	for (new i; i < sizeof(Memory); i++) {
-		SendClientCheck(playerid, Memory[i][AC_type], Memory[i][AC_memoryAddress] = AC_AnotherForm(Memory[i][AC_memoryAddress]), Memory[i][AC_memoryOffset], Memory[i][AC_byteCount]);
+		SendClientCheck(playerid, Memory[i][AC_type], AC_AnotherForm(Memory[i][AC_memoryAddress]), Memory[i][AC_memoryOffset], Memory[i][AC_byteCount]);
 	}
 	if (!AC_Player[playerid][pMobileUser]) {
 		if (!IsPlayerUsingOmp(playerid)) {
