@@ -61,6 +61,14 @@ static stock _AC_IncludeStates() <_ALS : _ALS_go> {}
 
 new const AC_Cheats[][] = {
 	{"S0beit"},
+	{"S0beit"},
+	{"S0beit"},
+	{"S0beit"},
+	{"S0beit"},
+	{"CLEO"},
+	{"CLEO"},
+	{"CLEO"},
+	{"CLEO"},
 	{"CLEO"},
 	{"CLEO5"},
 	{"Silentpatch"},
@@ -80,24 +88,24 @@ enum AC_Data {
 };
 
 new Memory[][AC_Data] = {
-	{0x47, 0, 0, 0x4},
-	{0x47, 0xCECECE, 0, 0x4},
-	{0x48, 0, 0, 0x4},
-	{0x48, 0xDEDEDE, 0, 0x4},
-	{0x5, 0x06865E, 0x0, 0x4},
-	{0x5, 0xA88774, 0x0, 0x4},
-	{0x5, 0xDB6746, 0x0, 0x4},
-	{0x5, 0xFDB957, 0x0, 0x4},
-	{0x5, 0x52D558, 0x0, 0x4},
-	{0x5, 0xE4FC58, 0x0, 0x4},
-	{0x5, 0x1BA246, 0x0, 0x4},
-	{0x5, 0xB0C56F, 0x0, 0x4},
-	{0x5, 0xF9855E, 0x0, 0x4},
-	{0x5, 0xF51D54, 0x0, 0x4},
-	{0x5, 0x5E8606, 0x0, 0x4},
-	{0x5, 0x543081, 0x0, 0x4},
-	{0x5, 0x5242CD, 0x0, 0x4},
-	{0x5, 0x6EFBC7, 0x0, 0x4}
+	{0x47, 0x0, 0, 0x4, 0},
+	{0x47, 0xCECECE, 0, 0x4, 0},
+	{0x48, 0, 0, 0x4, 0},
+	{0x48, 0xDEDEDE, 0, 0x4, 0},
+	{0x5, 0x06865E, 0x0, 0x4, 192},
+	{0x5, 0x5E8606, 0x0, 0x4, 192},
+	{0x5, 0x543081, 0x0, 0x4, 72},
+	{0x5, 0x5242CD, 0x0, 0x4, 204},
+	{0x5, 0x6EFBC7, 0x0, 0x4, 196},
+	{0x5, 0xA88774, 0x0, 0x4, 72},
+	{0x5, 0xDB6746, 0x0, 0x4, 192},
+	{0x5, 0xFDB957, 0x0, 0x4, 68},
+	{0x5, 0x52D558, 0x0, 0x4, 196},
+	{0x5, 0xE4FC58, 0x0, 0x4, 64},
+	{0x5, 0x1BA246, 0x0, 0x4, 8},
+	{0x5, 0xB0C56F, 0x0, 0x4, 200},
+	{0x5, 0xF9855E, 0x0, 0x4, 200},
+	{0x5, 0xF51D54, 0x0, 0x4, 128}
 };
 
 enum PR_Connection {
@@ -295,7 +303,7 @@ public OnClientCheckResponse(playerid, actionid, memaddr, retndata) {
 				case 0x0: if (!AC_Player[playerid][pMobileUser] && retndata != 256) AC_Player[playerid][pSuspicious] = false;
 				case 0xCECECE: if (!AC_Player[playerid][pMobileUser] && retndata == 256) {
 					AC_Player[playerid][pSuspicious] = true;
-					SendClientCheck(playerid, 0x47, 0, 0, 0x4);
+					SendClientCheck(playerid, 0x47, 0x0, 0, 0x4);
 				}
 			}
 		}
@@ -313,20 +321,10 @@ public OnClientCheckResponse(playerid, actionid, memaddr, retndata) {
 			}
 		}
 		case 0x5: {
-			if (memaddr == Memory[4][AC_memoryAddress]) if (retndata != 192) AC_DetectCheat(playerid, 0); // Sobeit
-			else if (memaddr == Memory[5][AC_memoryAddress]) if (retndata != 72) AC_DetectCheat(playerid, 1); // CLEO mods.
-			else if (memaddr == Memory[6][AC_memoryAddress]) if (retndata != 192) AC_DetectCheat(playerid, 1); // CLEO mods.
-			else if (memaddr == Memory[7][AC_memoryAddress]) if (retndata != 68) AC_DetectCheat(playerid, 1); // CLEO mods.
-			else if (memaddr == Memory[8][AC_memoryAddress]) if (retndata != 196) AC_DetectCheat(playerid, 1); // CLEO mods.
-			else if (memaddr == Memory[9][AC_memoryAddress]) if (retndata != 64) AC_DetectCheat(playerid, 1); // CLEO mods.
-			else if (memaddr == Memory[10][AC_memoryAddress]) if (retndata != 8) AC_DetectCheat(playerid, 2); // CLEO5.
-			else if (memaddr == Memory[11][AC_memoryAddress]) if (retndata != 200) AC_DetectCheat(playerid, 3); // Silentpatch.
-			else if (memaddr == Memory[12][AC_memoryAddress]) if (retndata != 200) AC_DetectCheat(playerid, 4); // Sampfuncs.asi
-			else if (memaddr == Memory[13][AC_memoryAddress]) if (retndata != 129) AC_DetectCheat(playerid, 5); // SobFox.asi
-			else if (memaddr == Memory[14][AC_memoryAddress]) if (retndata != 192 && actionid != 72) AC_DetectCheat(playerid, 0); // Sobeit
-			else if (memaddr == Memory[15][AC_memoryAddress]) if (retndata != 72 && actionid != 72) AC_DetectCheat(playerid, 0); // Sobeit
-			else if (memaddr == Memory[16][AC_memoryAddress]) if (retndata != 204) AC_DetectCheat(playerid, 0); // Sobeit
-			else if (memaddr == Memory[17][AC_memoryAddress]) if (retndata != 196) AC_DetectCheat(playerid, 0); // Sobeit
+			for (new i = 4; i < sizeof(Memory); i++) if (retndata != Memory[i][AC_retndata]) {
+				AC_DetectCheat(playerid, i);
+				break;
+			}
 		}
 	}
 	return AC_OnClientCheckResponse(playerid, actionid, memaddr, retndata);
