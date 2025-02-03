@@ -90,9 +90,7 @@ enum AC_Data {
 
 new Memory[][AC_Data] = {
 	{0x47, 0x0, 0, 0x4, 0, 0},
-	{0x47, 0xCECECE, 0, 0x4, 0, 0},
 	{0x48, 0, 0, 0x4, 0, 0},
-	{0x48, 0xDEDEDE, 0, 0x4, 0, 0},
 	{0x5, 0x06865E, 0x0, 0x4, 192, 0},
 	{0x5, 0x5E8606, 0x0, 0x4, 192, 72},
 	{0x5, 0x543081, 0x0, 0x4, 72, 72},
@@ -330,7 +328,7 @@ public OnClientCheckResponse(playerid, actionid, memaddr, retndata) {
 			}
 		}
 		case 0x5: {
-			for (new i = 4; i < sizeof(Memory); i++) if (retndata != Memory[i][AC_retndata] && Memory[i][AC_actionid] != 0 && actionid != Memory[i][AC_actionid]) {
+			for (new i = 4; i < sizeof(Memory); i++) if (retndata != Memory[i][AC_retndata] && (Memory[i][AC_actionid] != 0 && actionid != Memory[i][AC_actionid])) {
 				AC_DetectCheat(playerid, i);
 				break;
 			}
