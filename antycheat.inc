@@ -10,7 +10,7 @@
 
 Version: 2.3
 Very special thanks to Pevenaider for the effort that he made for the community.
-Contribuitors: sicario.dll (Everyone that contribuited this project should sign here with his/her name.)
+Contributors: sicario.dll (Everyone that contributed this project should sign here with his/her name.)
 
 */
 
