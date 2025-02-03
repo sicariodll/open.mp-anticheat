@@ -327,10 +327,12 @@ public OnClientCheckResponse(playerid, actionid, memaddr, retndata) {
 		}
 	}
 	else if (actionid == 0x5) {
-		for (new i = 2; i < sizeof(Memory); i++) if (memaddr == Memory[i][AC_memoryAddress] && retndata != Memory[i][AC_retndata]) {
-			AC_DetectCheat(playerid, i);
-			break;
-		}
+    for (new i = 2; i < sizeof(Memory); i++) {
+			if (memaddr == AC_AnotherForm(Memory[i][AC_memoryAddress]) && retndata != Memory[i][AC_retndata]) {
+				AC_DetectCheat(playerid, i);
+				break;
+			}
+    }
 	}
 	return AC_OnClientCheckResponse(playerid, actionid, memaddr, retndata);
 }
