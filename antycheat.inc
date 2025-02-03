@@ -14,6 +14,13 @@ Contribuitors: sicario.dll (Everyone that contribuited this project should sign 
 
 */
 
+#if defined _INC_antycheat
+	#endinput
+#endif
+#define _INC_antycheat
+
+#define ANTYCHEAT_VERSION (2.3)
+
 #tryinclude <open.mp>
 
 #if !defined _INC_open_mp
@@ -91,6 +98,14 @@ CHAIN_FORWARD:AC_OnPlayerDisconnect(playerid, reason) = 1;
 #endif
 #define OnPlayerUpdate(%0) CHAIN_PUBLIC:AC_OnPlayerUpdate(%0)
 CHAIN_FORWARD:AC_OnPlayerUpdate(playerid) = 1;
+
+#if defined _ALS_OnPlayerSpawn
+	#undef OnPlayerSpawn
+#else
+	#define _ALS_OnPlayerSpawn
+#endif
+#define OnPlayerSpawn(%0) CHAIN_PUBLIC:AC_OnPlayerSpawn(%0)
+CHAIN_FORWARD:AC_OnPlayerSpawn(playerid) = 1;
 
 #if defined _ALS_OnClientCheckResponse
 	#undef OnClientCheckResponse
