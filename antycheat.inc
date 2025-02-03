@@ -75,12 +75,15 @@ enum AC_Data {
 	AC_type,
 	AC_memoryAddress,
 	AC_memoryOffset,
-	AC_byteCount
+	AC_byteCount,
+	AC_retndata
 };
 
 new Memory[][AC_Data] = {
 	{0x47, 0, 0, 0x4},
+	{0x47, 0xCECECE, 0, 0x4},
 	{0x48, 0, 0, 0x4},
+	{0x48, 0xDEDEDE, 0, 0x4},
 	{0x5, 0x06865E, 0x0, 0x4},
 	{0x5, 0xA88774, 0x0, 0x4},
 	{0x5, 0xDB6746, 0x0, 0x4},
@@ -90,7 +93,11 @@ new Memory[][AC_Data] = {
 	{0x5, 0x1BA246, 0x0, 0x4},
 	{0x5, 0xB0C56F, 0x0, 0x4},
 	{0x5, 0xF9855E, 0x0, 0x4},
-	{0x5, 0xF51D54, 0x0, 0x4}
+	{0x5, 0xF51D54, 0x0, 0x4},
+	{0x5, 0x5E8606, 0x0, 0x4},
+	{0x5, 0x543081, 0x0, 0x4},
+	{0x5, 0x5242CD, 0x0, 0x4},
+	{0x5, 0x6EFBC7, 0x0, 0x4}
 };
 
 enum PR_Connection {
@@ -152,18 +159,16 @@ static ScriptExit() {
 public OnPlayerConnect(playerid) {
 	AC_CleanPlayerData(playerid);
 	for (new i; i < sizeof(Memory); i++) {
-		SendClientCheck(playerid, Memory[i][AC_type], AnotherForm(Memory[i][AC_memoryAddress]), Memory[i][AC_memoryOffset], Memory[i][AC_byteCount]);
+		SendClientCheck(playerid, Memory[i][AC_type], AC_AnotherForm(Memory[i][AC_memoryAddress]), Memory[i][AC_memoryOffset], Memory[i][AC_byteCount]);
 	}
-	CallLocalFunction("OnClientCheckResponse", "iiii", playerid, 0x47, 0xCECECE, 256);
-    CallLocalFunction("OnClientCheckResponse", "iiii", playerid, 0x48, 0xDEDEDE, 256);
 	if (!AC_Player[playerid][pMobileUser]) {
 		if (!IsPlayerUsingOmp(playerid)) {
-			ErrorMessage(playerid, "Computer players must use open.mp launcher to play on this server.");
+			ErrorMessage(playerid, "Computer players must use open.mp launcher to play on this server!");
 			return AC_Kick(playerid);
 		}
 		new version[24];
 		GetPlayerVersion(playerid, version, sizeof(version));
-		if (strcmp(version, "0.3.7") == 0) {
+		if (!strcmp(version, "0.3.7"), true) {
 			ErrorMessage(playerid, "You should select an higher version than 0.3.7-R1!");
 			return AC_Kick(playerid);
 		}
@@ -308,16 +313,20 @@ public OnClientCheckResponse(playerid, actionid, memaddr, retndata) {
 			}
 		}
 		case 0x5: {
-			if (memaddr == Memory[0][AC_memoryAddress]) if (retndata != 192) AC_DetectCheat(playerid, 0); // Sobeit
-			else if (memaddr == Memory[0][AC_memoryAddress]) if (retndata != 72) AC_DetectCheat(playerid, 1); // CLEO mods.
-			else if (memaddr == Memory[0][AC_memoryAddress]) if (retndata != 192) AC_DetectCheat(playerid, 1); // CLEO mods.
-			else if (memaddr == Memory[0][AC_memoryAddress]) if (retndata != 68) AC_DetectCheat(playerid, 1); // CLEO mods.
-			else if (memaddr == Memory[0][AC_memoryAddress]) if (retndata != 196) AC_DetectCheat(playerid, 1); // CLEO mods.
-			else if (memaddr == Memory[0][AC_memoryAddress]) if (retndata != 64) AC_DetectCheat(playerid, 1); // CLEO mods.
-			else if (memaddr == Memory[0][AC_memoryAddress]) if (retndata != 8) AC_DetectCheat(playerid, 2); // CLEO5.
-			else if (memaddr == Memory[0][AC_memoryAddress]) if (retndata != 200) AC_DetectCheat(playerid, 3); // Silentpatch.
-			else if (memaddr == Memory[0][AC_memoryAddress]) if (retndata != 200) AC_DetectCheat(playerid, 4); // Sampfuncs.asi
-			else if (memaddr == Memory[0][AC_memoryAddress]) if (retndata != 129) AC_DetectCheat(playerid, 5); // SobFox.asi
+			if (memaddr == Memory[3][AC_memoryAddress]) if (retndata != 192) AC_DetectCheat(playerid, 0); // Sobeit
+			else if (memaddr == Memory[4][AC_memoryAddress]) if (retndata != 72) AC_DetectCheat(playerid, 1); // CLEO mods.
+			else if (memaddr == Memory[5][AC_memoryAddress]) if (retndata != 192) AC_DetectCheat(playerid, 1); // CLEO mods.
+			else if (memaddr == Memory[6][AC_memoryAddress]) if (retndata != 68) AC_DetectCheat(playerid, 1); // CLEO mods.
+			else if (memaddr == Memory[7][AC_memoryAddress]) if (retndata != 196) AC_DetectCheat(playerid, 1); // CLEO mods.
+			else if (memaddr == Memory[8][AC_memoryAddress]) if (retndata != 64) AC_DetectCheat(playerid, 1); // CLEO mods.
+			else if (memaddr == Memory[9][AC_memoryAddress]) if (retndata != 8) AC_DetectCheat(playerid, 2); // CLEO5.
+			else if (memaddr == Memory[10][AC_memoryAddress]) if (retndata != 200) AC_DetectCheat(playerid, 3); // Silentpatch.
+			else if (memaddr == Memory[11][AC_memoryAddress]) if (retndata != 200) AC_DetectCheat(playerid, 4); // Sampfuncs.asi
+			else if (memaddr == Memory[12][AC_memoryAddress]) if (retndata != 129) AC_DetectCheat(playerid, 5); // SobFox.asi
+			else if (memaddr == Memory[13][AC_memoryAddress]) if (retndata != 192 && actionid != 72) AC_DetectCheat(playerid, 0); // Sobeit
+			else if (memaddr == Memory[14][AC_memoryAddress]) if (retndata != 72 && actionid != 72) AC_DetectCheat(playerid, 0); // Sobeit
+			else if (memaddr == Memory[15][AC_memoryAddress]) if (retndata != 204) AC_DetectCheat(playerid, 0); // Sobeit
+			else if (memaddr == Memory[16][AC_memoryAddress]) if (retndata != 196) AC_DetectCheat(playerid, 0); // Sobeit
 		}
 	}
 	return AC_OnClientCheckResponse(playerid, actionid, memaddr, retndata);
@@ -355,7 +364,7 @@ static AC_CleanPlayerData(playerid) {
 	return true;
 }
 
-static AnotherForm(input) {
+static AC_AnotherForm(input) {
     new result;
  
     #emit LOAD.S.pri input
