@@ -14,7 +14,9 @@ $$    $$ |$$ |  $$ |  $$  $$/ $$    $$ |$$       |$$ |  $$ |$$       |$$    $$ |
 
 Version: 2.3
 Very special thanks to Pevenaider for the effort that he made for the community.
-Contributors: sicario.dll (Everyone who contributes this project should sign here with his/her name.)
+Contributors: Pevenaider, sicario.dll, devbluen 
+
+(Everyone who contributes this project should sign here with his/her name.)
 
 */
 
