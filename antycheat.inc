@@ -25,7 +25,7 @@ Contributors: Pevenaider, sicario.dll, devbluen
 #endif
 #define _INC_antycheat
 
-#define ANTYCHEAT_VERSION (2.3 R-1)
+#define ANTYCHEAT_VERSION (2.3 R-2)
 
 #tryinclude <open.mp>
 
@@ -65,6 +65,25 @@ static stock _AC_IncludeStates() <_ALS : _ALS_go> {}
 #define InfoMessage(%0,%1) SendClientMessage(%0, 0xFFFF00AA, "[INFO] "%1)
 #define ErrorMessage(%0,%1) SendClientMessage(%0, 0xFF0000FF, "[ERROR] "%1)
 
+new Float:AC_Paynsprays[10][3] = {
+	{1025.05, -1024.23, 32.1},	// LS Temple
+	{487.68, -1740.87, 11.13},	// LS Santa Maria
+	{-1420.73, 2583.37, 55.56},	// El Quebrados
+	{-1904.39, 284.97, 40.75},	// Wang Cars
+	{-2425.91, 1022.33, 50.10},	// Juniper Hill
+	{1975.60, 2162.16, 10.77},	// LV Redsands
+	{2065.38, -1831.51, 13.25},	// Idlewood
+	{-99.55, 1118.36, 19.44},	// Fort Carson
+	{721.07, -455.94, 16.04},	// Dillimore
+	{2393.74, 1493.01, 10.52} 	// LV Unused (Pyramid)
+};
+
+new Float:AC_Modgarages[3][3] = {
+	{611.35, -77.55, 997.99},	// Loco Low Co.
+	{612.21, -123.90, 997.99},	// Wheel Arch Angels.
+	{621.45, -23.72, 1000.92} 	// TransFender
+};
+
 new const AC_Cheats[][] = {
 	{"S0beit"},
 	{"S0beit"},
@@ -82,7 +101,9 @@ new const AC_Cheats[][] = {
 	{"SobFox"},
 	{"Airbreak"},
 	{"Aimbot"},
-	{"AFK-Kill"}
+	{"AFK-Kill"},
+	{"Vehicle repair"},
+	{"Teleport"}
 };
 
 enum AC_Data {
@@ -126,7 +147,8 @@ enum AC_PlayerData {
 	bool:pMobileUser,
 	bool:pSuspicious,
 	pLastUpdate,
-	pCheckStep
+	pCheckStep,
+	pGarageTick
 };
 
 new AC_Player[MAX_PLAYERS][AC_PlayerData];
@@ -203,6 +225,27 @@ public OnPlayerUpdate(playerid) {
 	new Float:depth = 5.0, Float:playerdepth = 5.0;
 	if (!CA_IsPlayerInWater(playerid, depth, playerdepth) && (GetPlayerAnimationIndex(playerid) == 1538 || GetPlayerAnimationIndex(playerid) == 1539 || GetPlayerAnimationIndex(playerid) == 1543)) {
 		return AC_DetectCheat(playerid, 14);
+    }
+    if (IsPlayerSpawned(playerid)) {
+        new Float:AC_Pos[3];
+        GetPlayerPos(playerid, AC_Pos[0], AC_Pos[1], AC_Pos[2]);
+        if (!IsPlayerInRangeOfPoint(playerid, 50.0, AC_Pos[0], AC_Pos[1], AC_Pos[2])) {
+            if (!GetPVarInt(playerid, "Check_Teleport")) {
+                return AC_DetectCheat(playerid, 18);
+            }
+            else DeletePVar(playerid, "Check_Teleport");
+        }
+    }
+    if (GetPlayerState(playerid) == PLAYER_STATE:PLAYER_STATE_DRIVER) {
+    	new vehicleid = GetPlayerVehicleID(playerid), Float:health;
+    	GetVehicleHealth(vehicleid, health);
+    	if (health > 999.9 && (gettime() - AC_Player[playerid][pGarageTick])) {
+    		SetVehicleHealth(vehicleid, 999.9);
+    		AC_Player[playerid][pGarageTick] = gettime();
+    		if (!IsPlayerInsidePaySpray(playerid) && !IsPlayerInsideModGarage(playerid)) {
+    			return AC_DetectCheat(playerid, 17);
+    		}
+    	}
     }
 	return AC_OnPlayerUpdate(playerid);
 }
@@ -335,9 +378,14 @@ public OnClientCheckResponse(playerid, actionid, memaddr, retndata) {
 				AC_DetectCheat(playerid, i);
 				break;
 			}
-    }
+    	}
 	}
 	return AC_OnClientCheckResponse(playerid, actionid, memaddr, retndata);
+}
+
+stock AC_SetPlayerPos(playerid, Float:x, Float:y, Float:z) {
+	SetPVarInt(playerid, "Check_Teleport", 1);
+	return SetPlayerPos(playerid, x, y, z);
 }
 
 static AC_DetectCheat(playerid, cheat = -1) {
@@ -370,7 +418,22 @@ static AC_CleanPlayerData(playerid) {
 	AC_Player[playerid][pSuspicious] = false;
 	AC_Player[playerid][pLastUpdate] = 0;
 	AC_Player[playerid][pCheckStep] = 0;
+	AC_Player[playerid][pGarageTick] = 0;
 	return true;
+}
+
+static IsPlayerInsidePaySpray(playerid) {
+	for (new i; i < sizeof(AC_Paynsprays); i++) if (IsPlayerInRangeOfPoint(playerid, 10.0, AC_Paynsprays[i][0], AC_Paynsprays[i][1], AC_Paynsprays[i][2])) {
+		return true;
+	}
+	return false;
+}
+
+static IsPlayerInsideModGarage(playerid) {
+	for (new i; i < sizeof(AC_Modgarages); i++) if (IsPlayerInRangeOfPoint(playerid, 10.0, AC_Modgarages[i][0], AC_Modgarages[i][1], AC_Modgarages[i][2])) {
+		return true;
+	}
+	return false;
 }
 
 static AC_AnotherForm(input) {
