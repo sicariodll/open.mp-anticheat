@@ -201,7 +201,7 @@ public OnPlayerDisconnect(playerid, reason) {
 public OnPlayerUpdate(playerid) {
 	AC_Player[playerid][pLastUpdate] = GetTickCount();
 	new Float:depth = 5.0, Float:playerdepth = 5.0;
-	if (CA_IsPlayerInWater(playerid, depth, playerdepth) && (GetPlayerAnimationIndex(playerid) == 1538 || GetPlayerAnimationIndex(playerid) == 1539 || GetPlayerAnimationIndex(playerid) == 1543)) {
+	if (!CA_IsPlayerInWater(playerid, depth, playerdepth) && (GetPlayerAnimationIndex(playerid) == 1538 || GetPlayerAnimationIndex(playerid) == 1539 || GetPlayerAnimationIndex(playerid) == 1543)) {
 		return AC_DetectCheat(playerid, 14);
     }
 	return AC_OnPlayerUpdate(playerid);
