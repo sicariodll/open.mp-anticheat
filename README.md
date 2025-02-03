@@ -6,5 +6,6 @@
 **Special thanks to Pevenaider for creating this open source script and sharing it with the community.**
 
 This script mainly based on Client Check functions. Added ability to work with Pawn.Raknet plugin for better checks at version 2.2. 
-Added some more functions and corrected the whole script for better reading performance. Removed unnecessary command based checks.
-Added colandreas dependency for better level checks.
+* Added some more functions and corrected the whole script for better reading performance.
+* Removed unnecessary command based checks.
+* Added colandreas dependency for better level checks.
