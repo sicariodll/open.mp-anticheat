@@ -39,8 +39,23 @@ Contributors: sicario.dll (Everyone that contributed this project should sign he
 	#error colandreas.inc is required. (You must include it to use this include as well.)
 #endif
 
+// Pre-hooks for hooking callbacks
+#if !defined CHAIN_ORDER
+	#define CHAIN_ORDER() 0
+#endif
+
+#define CHAIN_HOOK(%0) forward @CO_%0();public @CO_%0()return CHAIN_ORDER()+1;
+#define CHAIN_NEXT(%0) @CO_%0
+
 #define CHAIN_PUBLIC:%0(%1) %0(%1) <_ALS : _ALS_go>
 #define CHAIN_FORWARD:%0_%2(%1)=%3; forward %0_%2(%1); public %0_%2(%1) <_ALS : _ALS_x0, _ALS : _ALS_x1> return (%3); public %0_%2(%1) <> return (%3);
+
+CHAIN_HOOK(AC)
+#undef CHAIN_ORDER
+#define CHAIN_ORDER CHAIN_NEXT(AC)
+
+static stock _AC_IncludeStates() <_ALS : _ALS_x0, _ALS : _ALS_x1, _ALS : _ALS_x2, _ALS : _ALS_x3> {}
+static stock _AC_IncludeStates() <_ALS : _ALS_go> {}
 
 #if defined _ALS_OnGameModeInit
 	#undef OnGameModeInit
@@ -146,7 +161,7 @@ new const AC_Cheats[][] = {
 	{"AFK-Kill"}
 };
 
-enum AC_Data = {
+enum AC_Data {
 	AC_type,
 	AC_memoryAddress,
 	AC_memoryOffset,
@@ -174,7 +189,7 @@ enum PR_Connection {
     PR_pByteNicknameLen,
     PR_pNickName[24],
     PR_pClientChallengeResponse,
-    PR_pByteAuthLen,
+    PR_pByteAuthKeyLen,
     PR_pAuthKey[50],
     PR_pClientVerLen,
     PR_pClientVersion[30]
@@ -183,7 +198,7 @@ enum PR_Connection {
 enum AC_PlayerData {
 	bool:pMobileUser,
 	bool:pSuspicious,
-	pLastUpdate = 0
+	pLastUpdate
 };
 
 new AC_Player[MAX_PLAYERS][AC_PlayerData];
@@ -217,7 +232,7 @@ public OnPlayerConnect(playerid) {
 	}
 	CallLocalFunction("OnClientCheckResponse", "iiii", playerid, 0x47, 0xCECECE, 256);
     CallLocalFunction("OnClientCheckResponse", "iiii", playerid, 0x48, 0xDEDEDE, 256);
-	if (!Player[playerid][pMobileUser]) {
+	if (!AC_Player[playerid][pMobileUser]) {
 		if (!IsPlayerUsingOmp(playerid)) {
 			Error(playerid, "Computer players must use open.mp launcher to play on this server.");
 			return AC_Kick(playerid);
@@ -238,20 +253,21 @@ public OnPlayerDisconnect(playerid, reason) {
 }
 
 public OnPlayerUpdate(playerid) {
-	Player[playerid][pLastUpdate] = GetTickCount();
-	if (!CA_IsPlayerInWater(playerid, 5.0, 5.0) && GetPlayerAnimationIndex(playerid) == (1538 || 1539 || 1543)) {
+	AC_Player[playerid][pLastUpdate] = GetTickCount();
+	new Float:depth = 5.0, Float:playerdepth = 5.0;
+	if (CA_IsPlayerInWater(playerid, depth, playerdepth) && (GetPlayerAnimationIndex(playerid) == 1538 || GetPlayerAnimationIndex(playerid) == 1539 || GetPlayerAnimationIndex(playerid) == 1543)) {
 		return AC_DetectCheat(playerid, 6);
     }
 	return AC_OnPlayerUpdate(playerid);
 }
 
 public OnPlayerSpawn(playerid) {
-	Player[playerid][pLastUpdate] = GetTickCount();
+	AC_Player[playerid][pLastUpdate] = GetTickCount();
 	return AC_OnPlayerSpawn(playerid);
 }
 
 public OnPlayerWeaponShot(playerid, WEAPON:weaponid, BULLET_HIT_TYPE:hittype, hitid, Float:fX, Float:fY, Float:fZ) {
-	if (BULLET_HIT_TYPE != BULLET_HIT_TYPE:BULLET_HIT_TYPE_NONE) {
+	if (hittype != BULLET_HIT_TYPE:BULLET_HIT_TYPE_NONE) {
 		if (!(-1000.0 <= fX <= 1000.0) || !(-1000.0 <= fY <= 1000.0) || !(-1000.0 <= fZ <= 1000.0)) {
             return AC_DetectCheat(playerid, 7);
         }
@@ -270,29 +286,13 @@ public OnPlayerGiveDamage(playerid, damagedid, Float:amount, weaponid, bodypart)
 }
 
 static ScriptInit() {
-	print("	             _              _                _   ");
-	print("             | |            | |              | |  ");
-	print("   __ _ _ __ | |_ _   _  ___| |__   ___  __ _| |_ ");
-	print("  / _` | '_ \| __| | | |/ __| '_ \ / _ \/ _` | __|");
-	print(" | (_| | | | | |_| |_| | (__| | | |  __/ (_| | |_ ");
-	print("  \__,_|_| |_|\__|\__, |\___|_| |_|\___|\__,_|\__|");
-	print("                   __/ |                          ");
-	print("                  |___/                           ");
-	print("--------------------------------------------------");
+	print("---------------------Antycheat--------------------");
 	print("------------------ Version: 2.3 ------------------");
 	print("--------- Special thanks to: Pevenaider ----------");
 	print("--------- Succesfully loaded the script! ---------");
 }
 
 static ScriptExit() {
-	print("	             _              _                _   ");
-	print("             | |            | |              | |  ");
-	print("   __ _ _ __ | |_ _   _  ___| |__   ___  __ _| |_ ");
-	print("  / _` | '_ \| __| | | |/ __| '_ \ / _ \/ _` | __|");
-	print(" | (_| | | | | |_| |_| | (__| | | |  __/ (_| | |_ ");
-	print("  \__,_|_| |_|\__|\__, |\___|_| |_|\___|\__,_|\__|");
-	print("                   __/ |                          ");
-	print("                  |___/                           ");
 	print("--------------------------------------------------");
 	print("------------------ Version: 2.3 ------------------");
 	print("--------- Special thanks to: Pevenaider ----------");
@@ -301,20 +301,21 @@ static ScriptExit() {
 
 public OnIncomingRPC(playerid, rpcid, BitStream:bs) {
 	if (rpcid == 25) {
+		new data[PR_Connection];
 		BS_ReadValue(bs, 
 	    	PR_INT32, data[PR_pVersion], 
 	    	PR_UINT8, data[PR_pByteMod], 
 	    	PR_UINT8, data[PR_pByteNicknameLen], 
 	    	PR_STRING, data[PR_pNickName], data[PR_pByteNicknameLen],
 	        PR_UINT32, data[PR_pClientChallengeResponse],
-	        PR_UINT8, data[PR_pByteAuthLen],
+	        PR_UINT8, data[PR_pByteAuthKeyLen],
 	        PR_STRING, data[PR_pAuthKey], data[PR_pByteAuthKeyLen],
 	        PR_UINT8, data[PR_pClientVerLen]
 	    );
-	    BS_ReadValue(bs, PR_STRING, data[PR_ClientVersion], (data[PR_pClientVerLen] >= 30 ? 30:data[PR_pClientVerLen]));
+	    BS_ReadValue(bs, PR_STRING, data[PR_pClientVersion], (data[PR_pClientVerLen] >= 30 ? 30:data[PR_pClientVerLen]));
 	    new checksum;
 	    BS_ReadUint16(bs, checksum);
-	    Player[playerid][pMobileUser] = (checksum == 0xBEEF) ? (true) : (false);
+	    AC_Player[playerid][pMobileUser] = (checksum == 0xBEEF) ? (true) : (false);
 	}
     return true;
 }
@@ -376,23 +377,23 @@ public OnClientCheckResponse(playerid, actionid, memaddr, retndata) {
 	switch (actionid) {
 		case 0x47: {
 			switch (memaddr) {
-				case 0x0: if (!Player[playerid][pMobileUser] && retndata != 256) Player[playerid][pSuspicious] = false;
-				case 0xCECECE: if (!Player[playerid][pMobileUser] && retndata == 256) {
-					Player[playerid][pSuspicious] = true;
+				case 0x0: if (!AC_Player[playerid][pMobileUser] && retndata != 256) AC_Player[playerid][pSuspicious] = false;
+				case 0xCECECE: if (!AC_Player[playerid][pMobileUser] && retndata == 256) {
+					AC_Player[playerid][pSuspicious] = true;
 					SendClientCheck(playerid, 0x47, 0, 0, 0x4);
 				}
 			}
 		}
 		case 0x48: {
-			if (!Player[playerid][pMobileUser]) {
+			if (!AC_Player[playerid][pMobileUser]) {
 				if (memaddr == 0xDEDEDE) {
 					if (retndata == 256) {
-						Player[playerid][pSuspicious] = true;
+						AC_Player[playerid][pSuspicious] = true;
 						SendClientCheck(playerid, 0x48, 0, 0, 0x4);
 					}
 				}
 				else {
-					if (retndata == 0) Player[playerid][pSuspicious] = false;
+					if (retndata == 0) AC_Player[playerid][pSuspicious] = false;
 				}
 			}
 		}
@@ -417,7 +418,7 @@ static AC_DetectCheat(playerid, cheat = -1) {
 }
 
 forward AC_OnCheatDetected(playerid, cheat);
-forward AC_OnCheatDetected(playerid, cheat) {
+public AC_OnCheatDetected(playerid, cheat) {
 	Error(playerid, "System detected that you're probably using %s on this server.", AC_Cheats[cheat]);
 	Info(playerid, "If you're thinking that it's wrong, just try to contact an administrator.");
 	AC_Kick(playerid);
@@ -434,12 +435,12 @@ public AC_DisconnectPlayer(playerid) {
 }
 
 static AC_IsPlayerPaused(playerid) {
-	return (GetTickCount() - Player[playerid][pLastUpdate] > 2000);
+	return (GetTickCount() - AC_Player[playerid][pLastUpdate] > 2000);
 }
 
 static AC_CleanPlayerData(playerid) {
-	Player[playerid][pMobileUser] = false;
-	Player[playerid][pSuspicious] = false;
-	Player[playerid][pLastUpdate] = 0;
+	AC_Player[playerid][pMobileUser] = false;
+	AC_Player[playerid][pSuspicious] = false;
+	AC_Player[playerid][pLastUpdate] = 0;
 	return true;
 }
