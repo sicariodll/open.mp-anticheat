@@ -313,20 +313,20 @@ public OnClientCheckResponse(playerid, actionid, memaddr, retndata) {
 			}
 		}
 		case 0x5: {
-			if (memaddr == Memory[3][AC_memoryAddress]) if (retndata != 192) AC_DetectCheat(playerid, 0); // Sobeit
-			else if (memaddr == Memory[4][AC_memoryAddress]) if (retndata != 72) AC_DetectCheat(playerid, 1); // CLEO mods.
-			else if (memaddr == Memory[5][AC_memoryAddress]) if (retndata != 192) AC_DetectCheat(playerid, 1); // CLEO mods.
-			else if (memaddr == Memory[6][AC_memoryAddress]) if (retndata != 68) AC_DetectCheat(playerid, 1); // CLEO mods.
-			else if (memaddr == Memory[7][AC_memoryAddress]) if (retndata != 196) AC_DetectCheat(playerid, 1); // CLEO mods.
-			else if (memaddr == Memory[8][AC_memoryAddress]) if (retndata != 64) AC_DetectCheat(playerid, 1); // CLEO mods.
-			else if (memaddr == Memory[9][AC_memoryAddress]) if (retndata != 8) AC_DetectCheat(playerid, 2); // CLEO5.
-			else if (memaddr == Memory[10][AC_memoryAddress]) if (retndata != 200) AC_DetectCheat(playerid, 3); // Silentpatch.
-			else if (memaddr == Memory[11][AC_memoryAddress]) if (retndata != 200) AC_DetectCheat(playerid, 4); // Sampfuncs.asi
-			else if (memaddr == Memory[12][AC_memoryAddress]) if (retndata != 129) AC_DetectCheat(playerid, 5); // SobFox.asi
-			else if (memaddr == Memory[13][AC_memoryAddress]) if (retndata != 192 && actionid != 72) AC_DetectCheat(playerid, 0); // Sobeit
-			else if (memaddr == Memory[14][AC_memoryAddress]) if (retndata != 72 && actionid != 72) AC_DetectCheat(playerid, 0); // Sobeit
-			else if (memaddr == Memory[15][AC_memoryAddress]) if (retndata != 204) AC_DetectCheat(playerid, 0); // Sobeit
-			else if (memaddr == Memory[16][AC_memoryAddress]) if (retndata != 196) AC_DetectCheat(playerid, 0); // Sobeit
+			if (memaddr == Memory[4][AC_memoryAddress]) if (retndata != 192) AC_DetectCheat(playerid, 0); // Sobeit
+			else if (memaddr == Memory[5][AC_memoryAddress]) if (retndata != 72) AC_DetectCheat(playerid, 1); // CLEO mods.
+			else if (memaddr == Memory[6][AC_memoryAddress]) if (retndata != 192) AC_DetectCheat(playerid, 1); // CLEO mods.
+			else if (memaddr == Memory[7][AC_memoryAddress]) if (retndata != 68) AC_DetectCheat(playerid, 1); // CLEO mods.
+			else if (memaddr == Memory[8][AC_memoryAddress]) if (retndata != 196) AC_DetectCheat(playerid, 1); // CLEO mods.
+			else if (memaddr == Memory[9][AC_memoryAddress]) if (retndata != 64) AC_DetectCheat(playerid, 1); // CLEO mods.
+			else if (memaddr == Memory[10][AC_memoryAddress]) if (retndata != 8) AC_DetectCheat(playerid, 2); // CLEO5.
+			else if (memaddr == Memory[11][AC_memoryAddress]) if (retndata != 200) AC_DetectCheat(playerid, 3); // Silentpatch.
+			else if (memaddr == Memory[12][AC_memoryAddress]) if (retndata != 200) AC_DetectCheat(playerid, 4); // Sampfuncs.asi
+			else if (memaddr == Memory[13][AC_memoryAddress]) if (retndata != 129) AC_DetectCheat(playerid, 5); // SobFox.asi
+			else if (memaddr == Memory[14][AC_memoryAddress]) if (retndata != 192 && actionid != 72) AC_DetectCheat(playerid, 0); // Sobeit
+			else if (memaddr == Memory[15][AC_memoryAddress]) if (retndata != 72 && actionid != 72) AC_DetectCheat(playerid, 0); // Sobeit
+			else if (memaddr == Memory[16][AC_memoryAddress]) if (retndata != 204) AC_DetectCheat(playerid, 0); // Sobeit
+			else if (memaddr == Memory[17][AC_memoryAddress]) if (retndata != 196) AC_DetectCheat(playerid, 0); // Sobeit
 		}
 	}
 	return AC_OnClientCheckResponse(playerid, actionid, memaddr, retndata);
