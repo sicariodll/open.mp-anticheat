@@ -10,7 +10,7 @@
 
 Version: 2.3
 Very special thanks to Pevenaider for the effort that he made for the community.
-Contributors: sicario.dll (Everyone who contributes this project should sign here with his/her name.)
+Contributors: sicario.dll (Everyone that contributed this project should sign here with his/her name.)
 
 */
 
@@ -193,7 +193,7 @@ public OnPlayerUpdate(playerid) {
 	AC_Player[playerid][pLastUpdate] = GetTickCount();
 	new Float:depth = 5.0, Float:playerdepth = 5.0;
 	if (CA_IsPlayerInWater(playerid, depth, playerdepth) && (GetPlayerAnimationIndex(playerid) == 1538 || GetPlayerAnimationIndex(playerid) == 1539 || GetPlayerAnimationIndex(playerid) == 1543)) {
-		return AC_DetectCheat(playerid, 6);
+		return AC_DetectCheat(playerid, 14);
     }
 	return AC_OnPlayerUpdate(playerid);
 }
@@ -206,18 +206,18 @@ public OnPlayerSpawn(playerid) {
 public OnPlayerWeaponShot(playerid, WEAPON:weaponid, BULLET_HIT_TYPE:hittype, hitid, Float:fX, Float:fY, Float:fZ) {
 	if (hittype != BULLET_HIT_TYPE:BULLET_HIT_TYPE_NONE) {
 		if (!(-1000.0 <= fX <= 1000.0) || !(-1000.0 <= fY <= 1000.0) || !(-1000.0 <= fZ <= 1000.0)) {
-            return AC_DetectCheat(playerid, 7);
+            return AC_DetectCheat(playerid, 15);
         }
 	}
 	if (fX > 2140000000 || fY > 2140000000 || fZ > 2140000000) {
-        return AC_DetectCheat(playerid, 7);
+        return AC_DetectCheat(playerid, 15);
     }
 	return AC_OnPlayerWeaponShot(playerid, WEAPON:weaponid, BULLET_HIT_TYPE:hittype, hitid, Float:fX, Float:fY, Float:fZ);
 }
 
 public OnPlayerGiveDamage(playerid, damagedid, Float:amount, WEAPON:weaponid, bodypart) {
 	if (AC_IsPlayerPaused(playerid)) {
-		return AC_DetectCheat(playerid, 8);
+		return AC_DetectCheat(playerid, 16);
 	}
 	return AC_OnPlayerGiveDamage(playerid, damagedid, Float:amount, WEAPON:weaponid, bodypart);
 }
