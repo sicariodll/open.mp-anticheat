@@ -9,3 +9,5 @@ This script mainly based on Client Check functions. Added ability to work with P
 * Added some more functions and corrected the whole script for better reading performance.
 * Removed unnecessary command based checks.
 * Added colandreas dependency for better level checks.
+
+Original script's source: https://pastebin.com/1MaDsEGE
