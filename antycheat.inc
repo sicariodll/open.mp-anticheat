@@ -137,11 +137,6 @@ CHAIN_FORWARD:AC_OnPlayerGiveDamage(playerid, damagedid, Float:amount, weaponid,
 new const AC_Cheats[][] = {
 	{"S0beit"},
 	{"CLEO"},
-	{"CLEO"},
-	{"CLEO"},
-	{"CLEO"},
-	{"CLEO"},
-	{"CLEO"},
 	{"CLEO5"},
 	{"Silentpatch"},
 	{"SAMPFUNCS"},
@@ -245,7 +240,7 @@ public OnPlayerDisconnect(playerid, reason) {
 public OnPlayerUpdate(playerid) {
 	Player[playerid][pLastUpdate] = GetTickCount();
 	if (!CA_IsPlayerInWater(playerid, 5.0, 5.0) && GetPlayerAnimationIndex(playerid) == (1538 || 1539 || 1543)) {
-		return AC_DetectCheat(playerid, 10);
+		return AC_DetectCheat(playerid, 6);
     }
 	return AC_OnPlayerUpdate(playerid);
 }
@@ -258,18 +253,18 @@ public OnPlayerSpawn(playerid) {
 public OnPlayerWeaponShot(playerid, WEAPON:weaponid, BULLET_HIT_TYPE:hittype, hitid, Float:fX, Float:fY, Float:fZ) {
 	if (BULLET_HIT_TYPE != BULLET_HIT_TYPE:BULLET_HIT_TYPE_NONE) {
 		if (!(-1000.0 <= fX <= 1000.0) || !(-1000.0 <= fY <= 1000.0) || !(-1000.0 <= fZ <= 1000.0)) {
-            return AC_DetectCheat(playerid, 11);
+            return AC_DetectCheat(playerid, 7);
         }
 	}
 	if (fX > 2140000000 || fY > 2140000000 || fZ > 2140000000) {
-        return AC_DetectCheat(playerid, 11);
+        return AC_DetectCheat(playerid, 7);
     }
 	return AC_OnPlayerWeaponShot(playerid, WEAPON:weaponid, BULLET_HIT_TYPE:hittype, hitid, Float:fX, Float:fY, Float:fZ);
 }
 
 public OnPlayerGiveDamage(playerid, damagedid, Float:amount, weaponid, bodypart) {
 	if (AC_IsPlayerPaused(playerid)) {
-		return AC_DetectCheat(playerid, 12);
+		return AC_DetectCheat(playerid, 8);
 	}
 	return AC_OnPlayerGiveDamage(playerid, damagedid, Float:amount, weaponid, bodypart);
 }
@@ -404,14 +399,14 @@ public OnClientCheckResponse(playerid, actionid, memaddr, retndata) {
 		case 0x5: {
 			if (memaddr == Memory[0][AC_memoryAddress]) if (retndata != 192) AC_DetectCheat(playerid, 0); // Sobeit
 			else if (memaddr == Memory[0][AC_memoryAddress]) if (retndata != 72) AC_DetectCheat(playerid, 1); // CLEO mods.
-			else if (memaddr == Memory[0][AC_memoryAddress]) if (retndata != 192) AC_DetectCheat(playerid, 2); // CLEO mods.
-			else if (memaddr == Memory[0][AC_memoryAddress]) if (retndata != 68) AC_DetectCheat(playerid, 3); // CLEO mods.
-			else if (memaddr == Memory[0][AC_memoryAddress]) if (retndata != 196) AC_DetectCheat(playerid, 4); // CLEO mods.
-			else if (memaddr == Memory[0][AC_memoryAddress]) if (retndata != 64) AC_DetectCheat(playerid, 5); // CLEO mods.
-			else if (memaddr == Memory[0][AC_memoryAddress]) if (retndata != 8) AC_DetectCheat(playerid, 6); // CLEO5.
-			else if (memaddr == Memory[0][AC_memoryAddress]) if (retndata != 200) AC_DetectCheat(playerid, 7); // Silentpatch.
-			else if (memaddr == Memory[0][AC_memoryAddress]) if (retndata != 200) AC_DetectCheat(playerid, 8); // Sampfuncs.asi
-			else if (memaddr == Memory[0][AC_memoryAddress]) if (retndata != 129) AC_DetectCheat(playerid, 9); // SobFox.asi
+			else if (memaddr == Memory[0][AC_memoryAddress]) if (retndata != 192) AC_DetectCheat(playerid, 1); // CLEO mods.
+			else if (memaddr == Memory[0][AC_memoryAddress]) if (retndata != 68) AC_DetectCheat(playerid, 1); // CLEO mods.
+			else if (memaddr == Memory[0][AC_memoryAddress]) if (retndata != 196) AC_DetectCheat(playerid, 1); // CLEO mods.
+			else if (memaddr == Memory[0][AC_memoryAddress]) if (retndata != 64) AC_DetectCheat(playerid, 1); // CLEO mods.
+			else if (memaddr == Memory[0][AC_memoryAddress]) if (retndata != 8) AC_DetectCheat(playerid, 2); // CLEO5.
+			else if (memaddr == Memory[0][AC_memoryAddress]) if (retndata != 200) AC_DetectCheat(playerid, 3); // Silentpatch.
+			else if (memaddr == Memory[0][AC_memoryAddress]) if (retndata != 200) AC_DetectCheat(playerid, 4); // Sampfuncs.asi
+			else if (memaddr == Memory[0][AC_memoryAddress]) if (retndata != 129) AC_DetectCheat(playerid, 5); // SobFox.asi
 		}
 	}
 	return AC_OnClientCheckResponse(playerid, actionid, memaddr, retndata);
