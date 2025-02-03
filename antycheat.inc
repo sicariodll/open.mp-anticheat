@@ -84,27 +84,24 @@ enum AC_Data {
 	AC_memoryAddress,
 	AC_memoryOffset,
 	AC_byteCount,
-	AC_retndata,
-	AC_actionid
+	AC_retndata
 };
 
 new Memory[][AC_Data] = {
-	{0x47, 0x0, 0, 0x4, 0, 0},
-	{0x48, 0, 0, 0x4, 0, 0},
-	{0x5, 0x06865E, 0x0, 0x4, 192, 0},
-	{0x5, 0x5E8606, 0x0, 0x4, 192, 72},
-	{0x5, 0x543081, 0x0, 0x4, 72, 72},
-	{0x5, 0x5242CD, 0x0, 0x4, 204, 0},
-	{0x5, 0x6EFBC7, 0x0, 0x4, 196, 0},
-	{0x5, 0xA88774, 0x0, 0x4, 72, 0},
-	{0x5, 0xDB6746, 0x0, 0x4, 192, 0},
-	{0x5, 0xFDB957, 0x0, 0x4, 68, 0},
-	{0x5, 0x52D558, 0x0, 0x4, 196, 0},
-	{0x5, 0xE4FC58, 0x0, 0x4, 64, 0},
-	{0x5, 0x1BA246, 0x0, 0x4, 8, 0},
-	{0x5, 0xB0C56F, 0x0, 0x4, 200, 0},
-	{0x5, 0xF9855E, 0x0, 0x4, 200, 0},
-	{0x5, 0xF51D54, 0x0, 0x4, 128, 0}
+	{0x47, 0x0, 0, 0x4, 0},
+	{0x48, 0, 0, 0x4, 0},
+	{0x5, 0x06865E, 0x0, 0x4, 192},
+	{0x5, 0x5242CD, 0x0, 0x4, 204},
+	{0x5, 0x6EFBC7, 0x0, 0x4, 196},
+	{0x5, 0xA88774, 0x0, 0x4, 72},
+	{0x5, 0xDB6746, 0x0, 0x4, 192},
+	{0x5, 0xFDB957, 0x0, 0x4, 68},
+	{0x5, 0x52D558, 0x0, 0x4, 196},
+	{0x5, 0xE4FC58, 0x0, 0x4, 64},
+	{0x5, 0x1BA246, 0x0, 0x4, 8},
+	{0x5, 0xB0C56F, 0x0, 0x4, 200},
+	{0x5, 0xF9855E, 0x0, 0x4, 200},
+	{0x5, 0xF51D54, 0x0, 0x4, 128}
 };
 
 enum PR_Connection {
@@ -122,7 +119,8 @@ enum PR_Connection {
 enum AC_PlayerData {
 	bool:pMobileUser,
 	bool:pSuspicious,
-	pLastUpdate
+	pLastUpdate,
+	pCheckCount
 };
 
 new AC_Player[MAX_PLAYERS][AC_PlayerData];
@@ -150,25 +148,23 @@ public OnFilterScriptExit() {
 }
 
 static ScriptInit() {
-	print("	             _              _                _   ");
-	print("	            | |            | |              | |  ");
-	print("	  __ _ _ __ | |_ _   _  ___| |__   ___  __ _| |_ ");
-	print("	 / _` | '_ \\| __| | | |/ __| '_ \\ / _ \\/ _` | __|");
-	print("	| (_| | | | | |_| |_| | (__| | | |  __/ (_| | |_ ");
-	print("	 \\__,_|_| |_|\\__|\\__, |\\___|_| |_|\\___|\\__,_|\\__|");
-	print("	                  __/ |                          ");
-	print("	                 |___/                           ");
+	print("                       __                          __                              __     	");
+	print("                      /  |                        /  |                            /  |    	");
+	print("  ______   _______   _$$ |_    __    __   _______ $$ |____    ______    ______   _$$ |_   	");
+	print(" /      \\ /       \\ / $$   |  /  |  /  | /       |$$      \\  /      \\  /      \\ / $$   |");
+	print(" $$$$$$  |$$$$$$$  |$$$$$$/   $$ |  $$ |/$$$$$$$/ $$$$$$$  |/$$$$$$  | $$$$$$  |$$$$$$/   	");
+	print(" /    $$ |$$ |  $$ |  $$ | __ $$ |  $$ |$$ |      $$ |  $$ |$$    $$ | /    $$ |  $$ | __ 	");
+	print("/$$$$$$$ |$$ |  $$ |  $$ |/  |$$ \\__$$ |$$ \\_____ $$ |  $$ |$$$$$$$$/ /$$$$$$$ |  $$ |/  |	");
+	print("$$    $$ |$$ |  $$ |  $$  $$/ $$    $$ |$$       |$$ |  $$ |$$       |$$    $$ |  $$  $$/ 	");
+	print(" $$$$$$$/ $$/   $$/    $$$$/   $$$$$$$ | $$$$$$$/ $$/   $$/  $$$$$$$/  $$$$$$$/    $$$$/  	");
+	print("                              /  \\__$$ |                                                  	");
+	print("                              $$    $$/                                                   	");
+	print("                               $$$$$$/                                                    	");
+	print("	             	   																			");
 }
 
 static ScriptExit() {
-	print("	             _              _                _   ");
-	print("	            | |            | |              | |  ");
-	print("	  __ _ _ __ | |_ _   _  ___| |__   ___  __ _| |_ ");
-	print("	 / _` | '_ \\| __| | | |/ __| '_ \\ / _ \\/ _` | __|");
-	print("	| (_| | | | | |_| |_| | (__| | | |  __/ (_| | |_ ");
-	print("	 \\__,_|_| |_|\\__|\\__, |\\___|_| |_|\\___|\\__,_|\\__|");
-	print("	                  __/ |                          ");
-	print("	                 |___/                           ");
+	print("Script unloaded successfully!");
 }
 
 public OnPlayerConnect(playerid) {
@@ -304,34 +300,32 @@ public OnIncomingPacket(playerid, packetid, BitStream:bs) {
 }
 
 public OnClientCheckResponse(playerid, actionid, memaddr, retndata) {
-	switch (actionid) {
-		case 0x47: {
-			switch (memaddr) {
-				case 0x0: if (!AC_Player[playerid][pMobileUser] && retndata != 256) AC_Player[playerid][pSuspicious] = false;
-				case 0xCECECE: if (!AC_Player[playerid][pMobileUser] && retndata == 256) {
+	if (actionid == 0x47) {
+		if (!AC_Player[playerid][pMobileUser]) {
+			if (memaddr == 0x0 && retndata != 256) AC_Player[playerid][pSuspicious] = false;
+			else if (memaddr == 0xCECECE && retndata == 256) {
+				AC_Player[playerid][pSuspicious] = true;
+				SendClientCheck(playerid, 0x47, 0x0, 0, 0x4);
+			}
+		}
+	}
+	else if (actionid == 0x48) {
+		if (!AC_Player[playerid][pMobileUser]) {
+			if (memaddr == 0xDEDEDE) {
+				if (retndata == 256) {
 					AC_Player[playerid][pSuspicious] = true;
-					SendClientCheck(playerid, 0x47, 0x0, 0, 0x4);
+					SendClientCheck(playerid, 0x48, 0, 0, 0x4);
 				}
+			}
+			else {
+				if (retndata == 0) AC_Player[playerid][pSuspicious] = false;
 			}
 		}
-		case 0x48: {
-			if (!AC_Player[playerid][pMobileUser]) {
-				if (memaddr == 0xDEDEDE) {
-					if (retndata == 256) {
-						AC_Player[playerid][pSuspicious] = true;
-						SendClientCheck(playerid, 0x48, 0, 0, 0x4);
-					}
-				}
-				else {
-					if (retndata == 0) AC_Player[playerid][pSuspicious] = false;
-				}
-			}
-		}
-		case 0x5: {
-			for (new i = 4; i < sizeof(Memory); i++) if (retndata != Memory[i][AC_retndata] && (Memory[i][AC_actionid] != 0 && actionid != Memory[i][AC_actionid])) {
-				AC_DetectCheat(playerid, i);
-				break;
-			}
+	}
+	else if (actionid == 0x5) {
+		for (new i = 2; i < sizeof(Memory); i++) if (retndata != Memory[i][AC_retndata]) {
+			AC_DetectCheat(playerid, i);
+			break;
 		}
 	}
 	return AC_OnClientCheckResponse(playerid, actionid, memaddr, retndata);
