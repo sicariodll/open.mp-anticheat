@@ -25,7 +25,7 @@ Contributors: Pevenaider, sicario.dll, devbluen
 #endif
 #define _INC_antycheat
 
-#define ANTYCHEAT_VERSION (2.3)
+#define ANTYCHEAT_VERSION (2.3 R-1)
 
 #tryinclude <open.mp>
 
@@ -126,7 +126,7 @@ enum AC_PlayerData {
 	bool:pMobileUser,
 	bool:pSuspicious,
 	pLastUpdate,
-	pCheckCount
+	pCheckStep
 };
 
 new AC_Player[MAX_PLAYERS][AC_PlayerData];
@@ -329,7 +329,8 @@ public OnClientCheckResponse(playerid, actionid, memaddr, retndata) {
 		}
 	}
 	else if (actionid == 0x5) {
-    for (new i = 2; i < sizeof(Memory); i++) {
+    for (new i = AC_Player[playerid][pCheckStep]; i < sizeof(Memory); i++) {
+			AC_Player[playerid][pCheckStep]++;
 			if (memaddr == AC_AnotherForm(Memory[i][AC_memoryAddress]) && retndata != Memory[i][AC_retndata]) {
 				AC_DetectCheat(playerid, i);
 				break;
@@ -368,6 +369,7 @@ static AC_CleanPlayerData(playerid) {
 	AC_Player[playerid][pMobileUser] = false;
 	AC_Player[playerid][pSuspicious] = false;
 	AC_Player[playerid][pLastUpdate] = 0;
+	AC_Player[playerid][pCheckStep] = 0;
 	return true;
 }
 
