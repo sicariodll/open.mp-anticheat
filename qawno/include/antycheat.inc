@@ -86,14 +86,6 @@ new Float:AC_Garages[3][3] = {
 
 new const AC_Cheats[][] = {
 	{"S0beit"},
-	{"S0beit"},
-	{"S0beit"},
-	{"S0beit"},
-	{"S0beit"},
-	{"CLEO"},
-	{"CLEO"},
-	{"CLEO"},
-	{"CLEO"},
 	{"CLEO"},
 	{"CLEO5"},
 	{"Silentpatch"},
@@ -104,6 +96,20 @@ new const AC_Cheats[][] = {
 	{"AFK-Kill"},
 	{"Vehicle repair"},
 	{"Teleport"}
+};
+
+enum {
+	CHEAT_SOBEIT,
+	CHEAT_CLEO,
+	CHEAT_CLEO5,
+	CHEAT_SILENT,
+	CHEAT_SAMPFUNCS,
+	CHEAT_SOBFOX,
+	CHEAT_AIRBREAK,
+	CHEAT_AIMBOT,
+	CHEAT_AFKILL,
+	CHEAT_REPAIR,
+	CHEAT_TELEPORT
 };
 
 enum AC_Data {
@@ -128,8 +134,7 @@ new Memory[][AC_Data] = {
 	{0x5, 0x1BA246, 0x0, 0x4, 8},
 	{0x5, 0xB0C56F, 0x0, 0x4, 200},
 	{0x5, 0xF9855E, 0x0, 0x4, 200},
-	{0x5, 0xF51D54, 0x0, 0x4, 128},
-	{0x5, 0xA1F35B, 0x0, 0x4, 72}
+	{0x5, 0xF51D54, 0x0, 0x4, 128}
 };
 
 enum PR_Connection {
@@ -149,7 +154,8 @@ enum AC_PlayerData {
 	bool:pSuspicious,
 	pLastUpdate,
 	pCheckStep,
-	pGarageTick
+	pGarageTick,
+	pLastData
 };
 
 new AC_Player[MAX_PLAYERS][AC_PlayerData];
@@ -198,6 +204,7 @@ static ScriptExit() {
 
 public OnPlayerConnect(playerid) {
 	AC_CleanPlayerData(playerid);
+	SendClientCheck(playerid, 0x45, 0x3A9EB, 0, 0x4);
 	for (new i; i < sizeof(Memory); i++) {
 		SendClientCheck(playerid, Memory[i][AC_type], AC_AnotherForm(Memory[i][AC_memoryAddress]), Memory[i][AC_memoryOffset], Memory[i][AC_byteCount]);
 	}
@@ -275,6 +282,11 @@ public OnPlayerGiveDamage(playerid, damagedid, Float:amount, WEAPON:weaponid, bo
 	return AC_OnPlayerGiveDamage(playerid, damagedid, Float:amount, WEAPON:weaponid, bodypart);
 }
 
+public OnPlayerRequestClass(playerid, classid) {
+	SendClientCheck(playerid, 0x45, 0x3A9EB, 0, 0x4);
+	return AC_OnPlayerRequestClass(playerid, classid);
+}
+
 public OnIncomingRPC(playerid, rpcid, BitStream:bs) {
 	if (rpcid == 25) {
 		new data[PR_Connection];
@@ -350,7 +362,19 @@ public OnIncomingPacket(playerid, packetid, BitStream:bs) {
 }
 
 public OnClientCheckResponse(playerid, actionid, memaddr, retndata) {
-	if (actionid == 0x47) {
+	if (actionid == 0x45) {
+		if (memaddr == 0x3A9EB) {
+			if (!AC_Player[playerid][pLastData]) {
+				AC_Player[playerid][pLastData] = retndata;
+			}
+			else {
+				if (retndata != AC_Player[playerid][pLastData]) {
+					AC_DetectCheat(playerid, 0);
+				}
+			}
+		}
+	}
+	else if (actionid == 0x47) {
 		if (!AC_Player[playerid][pMobileUser]) {
 			if (memaddr == 0x0 && retndata != 256) AC_Player[playerid][pSuspicious] = false;
 			else if (memaddr == 0xCECECE && retndata == 256) {
@@ -373,7 +397,7 @@ public OnClientCheckResponse(playerid, actionid, memaddr, retndata) {
 		}
 	}
 	else if (actionid == 0x5) {
-    for (new i = AC_Player[playerid][pCheckStep]; i < sizeof(Memory); i++) {
+    	for (new i = AC_Player[playerid][pCheckStep]; i < sizeof(Memory); i++) {
 			AC_Player[playerid][pCheckStep]++;
 			if (memaddr == AC_AnotherForm(Memory[i][AC_memoryAddress]) && retndata != Memory[i][AC_retndata]) {
 				AC_DetectCheat(playerid, i);
@@ -420,6 +444,7 @@ static AC_CleanPlayerData(playerid) {
 	AC_Player[playerid][pLastUpdate] = 0;
 	AC_Player[playerid][pCheckStep] = 0;
 	AC_Player[playerid][pGarageTick] = 0;
+	AC_Player[playerid][pLastData] = 0;
 	return true;
 }
 
@@ -537,6 +562,14 @@ AC_CHAIN_FORWARD:AC_OnPlayerDisconnect(playerid, reason) = 1;
 #endif
 #define OnPlayerUpdate(%0) AC_CHAIN_PUBLIC:AC_OnPlayerUpdate(%0)
 AC_CHAIN_FORWARD:AC_OnPlayerUpdate(playerid) = 1;
+
+#if defined _ALS_OnPlayerRequestClass
+	#undef OnPlayerRequestClass
+#else
+	#define _ALS_OnPlayerRequestClass
+#endif
+#define OnPlayerRequestClass(%0) AC_CHAIN_PUBLIC:AC_OnPlayerRequestClass(%0)
+AC_CHAIN_FORWARD:AC_OnPlayerRequestClass(playerid, classid) = 1;
 
 #if defined _ALS_OnPlayerSpawn
 	#undef OnPlayerSpawn
