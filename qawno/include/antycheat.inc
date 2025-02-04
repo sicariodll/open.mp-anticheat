@@ -232,14 +232,14 @@ public OnPlayerUpdate(playerid) {
 	AC_Player[playerid][pLastUpdate] = GetTickCount();
 	new Float:depth = 5.0, Float:playerdepth = 5.0;
 	if (!CA_IsPlayerInWater(playerid, depth, playerdepth) && (GetPlayerAnimationIndex(playerid) == 1538 || GetPlayerAnimationIndex(playerid) == 1539 || GetPlayerAnimationIndex(playerid) == 1543)) {
-		return AC_DetectCheat(playerid, 14);
+		return AC_DetectCheat(playerid, CHEAT_AIRBREAK);
     }
     if (IsPlayerSpawned(playerid)) {
         new Float:AC_Pos[3];
         GetPlayerPos(playerid, AC_Pos[0], AC_Pos[1], AC_Pos[2]);
         if (!IsPlayerInRangeOfPoint(playerid, 50.0, AC_Pos[0], AC_Pos[1], AC_Pos[2])) {
             if (!GetPVarInt(playerid, "Check_Teleport")) {
-                return AC_DetectCheat(playerid, 18);
+                return AC_DetectCheat(playerid, CHEAT_TELEPORT);
             }
             else DeletePVar(playerid, "Check_Teleport");
         }
@@ -251,7 +251,7 @@ public OnPlayerUpdate(playerid) {
     		SetVehicleHealth(vehicleid, 999.9);
     		AC_Player[playerid][pGarageTick] = gettime();
     		if (!IsPlayerInsidePaySpray(playerid) && !IsPlayerInsideModGarage(playerid)) {
-    			return AC_DetectCheat(playerid, 17);
+    			return AC_DetectCheat(playerid, CHEAT_REPAIR);
     		}
     	}
     }
@@ -266,18 +266,18 @@ public OnPlayerSpawn(playerid) {
 public OnPlayerWeaponShot(playerid, WEAPON:weaponid, BULLET_HIT_TYPE:hittype, hitid, Float:fX, Float:fY, Float:fZ) {
 	if (hittype != BULLET_HIT_TYPE:BULLET_HIT_TYPE_NONE) {
 		if ((fX < -1000.0 || fX > 1000.0) || (fY < -1000.0 || fY > 1000.0) || (fZ < -1000.0 || fZ > 1000.0)) {
-            return AC_DetectCheat(playerid, 15);
+            return AC_DetectCheat(playerid, CHEAT_AIMBOT);
         }
 	}
 	if (fX > 2140000000 || fY > 2140000000 || fZ > 2140000000) {
-        return AC_DetectCheat(playerid, 15);
+        return AC_DetectCheat(playerid, CHEAT_AIMBOT);
     }
 	return AC_OnPlayerWeaponShot(playerid, WEAPON:weaponid, BULLET_HIT_TYPE:hittype, hitid, Float:fX, Float:fY, Float:fZ);
 }
 
 public OnPlayerGiveDamage(playerid, damagedid, Float:amount, WEAPON:weaponid, bodypart) {
 	if (AC_IsPlayerPaused(playerid)) {
-		return AC_DetectCheat(playerid, 16);
+		return AC_DetectCheat(playerid, CHEAT_AFKILL);
 	}
 	return AC_OnPlayerGiveDamage(playerid, damagedid, Float:amount, WEAPON:weaponid, bodypart);
 }
@@ -318,7 +318,7 @@ public OnIncomingPacket(playerid, packetid, BitStream:bs) {
             new const Float:OPTUD_angle = atan2(2 * ((OPTUD_y * OPTUD_z) + (OPTUD_w * OPTUD_x)), (OPTUD_w * OPTUD_w) - (OPTUD_x * OPTUD_x) - (OPTUD_y * OPTUD_y) + (OPTUD_z * OPTUD_z));
             if (GetPlayerSpecialAction(playerid) == SPECIAL_ACTION:SPECIAL_ACTION_NONE) {
                 if ((OPTUD_angle > 85.0 || OPTUD_angle < -85.0) && OPTUD_angle == OPTUD_angle) {
-                    return AC_DetectCheat(playerid, 0);
+                    return AC_DetectCheat(playerid, CHEAT_SOBEIT);
                 }
             }
             new BWH_OnFootData[PR_OnFootSync];
@@ -331,7 +331,7 @@ public OnIncomingPacket(playerid, packetid, BitStream:bs) {
                 BS_WriteOnFootSync(bs, BWH_OnFootData);
             }
             if(BWH_OnFootData[PR_weaponId] == 40) {
-                return AC_DetectCheat(playerid, 0);
+                return AC_DetectCheat(playerid, CHEAT_SOBEIT);
             }
         }
         case 209: {
@@ -354,7 +354,7 @@ public OnIncomingPacket(playerid, packetid, BitStream:bs) {
             BS_IgnoreBits(bs, 8);
             BS_ReadAimSync(bs, aimData);
             if (aimData[PR_camMode] == 45 || aimData[PR_camMode] == 49) {
-                return AC_DetectCheat(playerid, 0);
+                return AC_DetectCheat(playerid, CHEAT_SOBEIT);
             }
         }
     }
@@ -369,7 +369,7 @@ public OnClientCheckResponse(playerid, actionid, memaddr, retndata) {
 			}
 			else {
 				if (retndata != AC_Player[playerid][pLastData]) {
-					AC_DetectCheat(playerid, 0);
+					AC_DetectCheat(playerid, CHEAT_SOBFOX);
 				}
 			}
 		}
@@ -400,7 +400,12 @@ public OnClientCheckResponse(playerid, actionid, memaddr, retndata) {
     	for (new i = AC_Player[playerid][pCheckStep]; i < sizeof(Memory); i++) {
 			AC_Player[playerid][pCheckStep]++;
 			if (memaddr == AC_AnotherForm(Memory[i][AC_memoryAddress]) && retndata != Memory[i][AC_retndata]) {
-				AC_DetectCheat(playerid, i);
+				new reason;
+				switch (i) {
+					case 0..4: reason = CHEAT_SOBEIT;
+					case 5..9: reason = CHEAT_CLEO;
+				}
+				AC_DetectCheat(playerid, reason);
 				break;
 			}
     	}
