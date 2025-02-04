@@ -7,6 +7,6 @@
 
 *This script mainly based on SendClientCheck function to analyze the game memory for third party modifications like S0beit, CLEO and Moonloader. It's powered with Pawn.RakNet and ColAndreas plugins which allows you to analyze server traffic and collision data for precise detections.*
 
-*Before using it keep in mind that this is script is still under development and we do all our possibilities to do our best for the community. If you're facing any problems or request new functions or wanna contribute and show your creativity, never hesitate to contact us! :)*
+*Before using it keep in mind that this script is still under development and we do all our possibilities to do our best for the community. If you're facing any problems or request new functions or wanna contribute and show your creativity, never hesitate to contact us! :)*
 
 ``Original script's source: https://pastebin.com/1MaDsEGE``
