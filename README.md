@@ -1,12 +1,11 @@
 ![antycheat-2-3-2025](https://github.com/user-attachments/assets/dbb0e936-bb37-4d4a-929f-728ef477e6ec)
 
 # Antycheat
-**The power is in your own hands!**
 
-**Very special thanks to Pevenaider for creating this open source script and sharing it with the open.mp community.**
+**The power is in your hands!**
 
-*This script mainly based on SendClientCheck function to analyze the game memory for third party modifications like S0beit, CLEO and Moonloader. It's powered with Pawn.RakNet and ColAndreas plugins which allows you to analyze server traffic and collision data for precise detections.*
+**Special thanks to Pevenaider for developing this open-source script and generously sharing it with the open.mp community.**
 
-*Before using it keep in mind that this script is still under development and we do all our possibilities to do our best for the community. If you have any problems or request new functions or wanna contribute and show your creativity, never hesitate to contact us! :)*
+This script primarily utilizes the **SendClientCheck** function to scan game memory for third-party modifications such as **S0beit**, **CLEO**, and **MoonLoader**. It is enhanced by Pawn.RakNet and ColAndreas plugins, allowing for precise detections by analyzing server traffic and collision data.
 
-`Original script's source: https://pastebin.com/1MaDsEGE`
+⚠️ Please note: This script is still in development. We are constantly working to improve it for the community. If you encounter issues, have feature requests, or want to contribute and showcase your creativity, feel free to reach out—we’d love to hear from you!
