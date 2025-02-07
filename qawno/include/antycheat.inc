@@ -12,7 +12,7 @@ $$    $$ |$$ |  $$ |  $$  $$/ $$    $$ |$$       |$$ |  $$ |$$       |$$    $$ |
                               $$    $$/                                                   
                                $$$$$$/                                                                            
 
-Version: 2.3
+Version: 2.5
 Very special thanks to Pevenaider for the effort that he made for the community.
 Contributors: Pevenaider, sicario.dll, devbluen 
 
@@ -25,7 +25,7 @@ Contributors: Pevenaider, sicario.dll, devbluen
 #endif
 #define _INC_antycheat
 
-#define ANTYCHEAT_VERSION (2.4 R-1)
+#define ANTYCHEAT_VERSION (2.5)
 
 #tryinclude <open.mp>
 
@@ -157,7 +157,6 @@ enum AC_PlayerData {
 	bool:pMobileUser,
 	bool:pSuspicious,
 	pLastUpdate,
-	pCheckStep,
 	pGarageTick,
 	pLastData
 };
@@ -346,13 +345,20 @@ public OnIncomingPacket(playerid, packetid, BitStream:bs) {
             new unoccupiedData[PR_UnoccupiedSync];
             BS_IgnoreBits(bs, 8);
             BS_ReadUnoccupiedSync(bs, unoccupiedData);
-            if (floatcmp(floatabs(unoccupiedData[PR_roll][0]), 1.00000) == 1 || floatcmp(floatabs(unoccupiedData[PR_roll][1]), 1.00000) == 1 || 
-                floatcmp(floatabs(unoccupiedData[PR_roll][2]), 1.00000) == 1 || floatcmp(floatabs(unoccupiedData[PR_direction][0]), 1.00000) == 1 || 
-                floatcmp(floatabs(unoccupiedData[PR_direction][1]), 1.00000) == 1 || floatcmp(floatabs(unoccupiedData[PR_direction][2]), 1.00000) == 1 || 
-                floatcmp(floatabs(unoccupiedData[PR_position][0]), 20000.00000) == 1 || floatcmp(floatabs(unoccupiedData[PR_position][1]), 20000.00000) == 1 || 
-                floatcmp(floatabs(unoccupiedData[PR_position][2]), 20000.00000) == 1 || floatcmp(floatabs(unoccupiedData[PR_angularVelocity][0]), 1.00000) == 1 || 
-                floatcmp(floatabs(unoccupiedData[PR_angularVelocity][1]), 1.00000) == 1 || floatcmp(floatabs(unoccupiedData[PR_angularVelocity][2]), 1.00000) == 1 || 
-                floatcmp(floatabs(unoccupiedData[PR_velocity][0]), 100.00000) == 1 || floatcmp(floatabs(unoccupiedData[PR_velocity][1]), 100.00000) == 1 || 
+            if (floatcmp(floatabs(unoccupiedData[PR_roll][0]), 1.00000) == 1 || 
+            	floatcmp(floatabs(unoccupiedData[PR_roll][1]), 1.00000) == 1 || 
+                floatcmp(floatabs(unoccupiedData[PR_roll][2]), 1.00000) == 1 || 
+                floatcmp(floatabs(unoccupiedData[PR_direction][0]), 1.00000) == 1 || 
+                floatcmp(floatabs(unoccupiedData[PR_direction][1]), 1.00000) == 1 || 
+                floatcmp(floatabs(unoccupiedData[PR_direction][2]), 1.00000) == 1 || 
+                floatcmp(floatabs(unoccupiedData[PR_position][0]), 20000.00000) == 1 || 
+                floatcmp(floatabs(unoccupiedData[PR_position][1]), 20000.00000) == 1 || 
+                floatcmp(floatabs(unoccupiedData[PR_position][2]), 20000.00000) == 1 || 
+                floatcmp(floatabs(unoccupiedData[PR_angularVelocity][0]), 1.00000) == 1 || 
+                floatcmp(floatabs(unoccupiedData[PR_angularVelocity][1]), 1.00000) == 1 || 
+                floatcmp(floatabs(unoccupiedData[PR_angularVelocity][2]), 1.00000) == 1 || 
+                floatcmp(floatabs(unoccupiedData[PR_velocity][0]), 100.00000) == 1 || 
+                floatcmp(floatabs(unoccupiedData[PR_velocity][1]), 100.00000) == 1 || 
                 floatcmp(floatabs(unoccupiedData[PR_velocity][2]), 100.00000) == 1) {
                 return false;
             }
@@ -372,7 +378,7 @@ public OnIncomingPacket(playerid, packetid, BitStream:bs) {
 public OnClientCheckResponse(playerid, actionid, memaddr, retndata) {
 	if (actionid == 0x45) {
 		for (new i; i < sizeof(Memory); i++) {
-			if (memaddr == AC_Encode(Memory[i][AC_memoryAddress])) {
+			if (memaddr == Memory[i][AC_memoryAddress]) {
 				if (!AC_Player[playerid][pLastData]) {
 					AC_Player[playerid][pLastData] = retndata;
 				}
@@ -456,7 +462,6 @@ static AC_CleanPlayerData(playerid) {
 	AC_Player[playerid][pMobileUser] = false;
 	AC_Player[playerid][pSuspicious] = false;
 	AC_Player[playerid][pLastUpdate] = 0;
-	AC_Player[playerid][pCheckStep] = 0;
 	AC_Player[playerid][pGarageTick] = 0;
 	AC_Player[playerid][pLastData] = 0;
 	return true;
