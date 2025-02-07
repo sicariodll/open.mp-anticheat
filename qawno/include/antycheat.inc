@@ -266,6 +266,9 @@ public OnPlayerUpdate(playerid) {
 }
 
 public OnPlayerSpawn(playerid) {
+	for (new i; i < sizeof(Memory); i++) if (Memory[i][AC_type] == 0x45) {
+		SendClientCheck(playerid, Memory[i][AC_type], Memory[i][AC_memoryAddress], Memory[i][AC_memoryOffset], Memory[i][AC_byteCount]);
+	}
 	AC_Player[playerid][pLastUpdate] = GetTickCount();
 	return AC_OnPlayerSpawn(playerid);
 }
@@ -379,13 +382,9 @@ public OnClientCheckResponse(playerid, actionid, memaddr, retndata) {
 	if (actionid == 0x45) {
 		for (new i; i < sizeof(Memory); i++) {
 			if (memaddr == Memory[i][AC_memoryAddress]) {
-				if (!AC_Player[playerid][pLastData]) {
-					AC_Player[playerid][pLastData] = retndata;
-				}
-				else {
-					if (retndata != AC_Player[playerid][pLastData]) {
-						AC_DetectCheat(playerid, CHEAT_SOBFOX);
-					}
+				AC_Player[playerid][pLastData] = retndata;
+				if (retndata != AC_Player[playerid][pLastData]) {
+					AC_DetectCheat(playerid, CHEAT_SOBFOX);
 				}
 			}
 		}
@@ -446,7 +445,7 @@ public AC_OnCheatDetected(playerid, cheat) {
 }
 
 static AC_Kick(playerid) {
-	return SetTimerEx("AC_DisconnectPlayer", 1000, false, "i", playerid);
+	return SetTimerEx("AC_DisconnectPlayer", 500, false, "i", playerid);
 }
 
 forward AC_DisconnectPlayer(playerid);
@@ -463,6 +462,7 @@ static AC_CleanPlayerData(playerid) {
 	AC_Player[playerid][pSuspicious] = false;
 	AC_Player[playerid][pLastUpdate] = 0;
 	AC_Player[playerid][pGarageTick] = 0;
+	AC_Player[playerid][pLastData] = 0;
 	AC_Player[playerid][pLastData] = 0;
 	return true;
 }
