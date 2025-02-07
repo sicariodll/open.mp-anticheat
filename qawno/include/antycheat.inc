@@ -12,7 +12,7 @@ $$    $$ |$$ |  $$ |  $$  $$/ $$    $$ |$$       |$$ |  $$ |$$       |$$    $$ |
                               $$    $$/                                                   
                                $$$$$$/                                                                            
 
-Version: 2.3
+Version: 2.5
 Very special thanks to Pevenaider for the effort that he made for the community.
 Contributors: Pevenaider, sicario.dll, devbluen 
 
@@ -25,7 +25,7 @@ Contributors: Pevenaider, sicario.dll, devbluen
 #endif
 #define _INC_antycheat
 
-#define ANTYCHEAT_VERSION (2.4 R-1)
+#define ANTYCHEAT_VERSION (2.5)
 
 #tryinclude <open.mp>
 
@@ -121,7 +121,11 @@ enum AC_Data {
 };
 
 new Memory[][AC_Data] = {
-	{0x47, 0x0, 0, 0x4, 0},
+	{0x45, 0x3A9EB, 0, 0x4, 0},
+	{0x45, 0x3AEB9, 0, 0x4, 0},
+	{0x45, 0x3AD8D, 0, 0x4, 0},
+	{0x45, 0x3A7F2, 0, 0x4, 0},
+	{0x47, 0, 0, 0x4, 0},
 	{0x48, 0, 0, 0x4, 0},
 	{0x5, 0x06865E, 0x0, 0x4, 192},
 	{0x5, 0x5242CD, 0x0, 0x4, 204},
@@ -153,7 +157,6 @@ enum AC_PlayerData {
 	bool:pMobileUser,
 	bool:pSuspicious,
 	pLastUpdate,
-	pCheckStep,
 	pGarageTick,
 	pLastData
 };
@@ -204,9 +207,13 @@ static ScriptExit() {
 
 public OnPlayerConnect(playerid) {
 	AC_CleanPlayerData(playerid);
-	SendClientCheck(playerid, 0x45, 0x3A9EB, 0, 0x4);
 	for (new i; i < sizeof(Memory); i++) {
-		SendClientCheck(playerid, Memory[i][AC_type], AC_AnotherForm(Memory[i][AC_memoryAddress]), Memory[i][AC_memoryOffset], Memory[i][AC_byteCount]);
+		if (Memory[i][AC_type] == 0x5)
+			SendClientCheck(playerid, Memory[i][AC_type], AC_Encode(Memory[i][AC_memoryAddress]), Memory[i][AC_memoryOffset], Memory[i][AC_byteCount]);
+		}
+		else {
+			SendClientCheck(playerid, Memory[i][AC_type], Memory[i][AC_memoryAddress], Memory[i][AC_memoryOffset], Memory[i][AC_byteCount]);
+		}
 	}
 	if (!AC_Player[playerid][pMobileUser]) {
 		if (!IsPlayerUsingOmp(playerid)) {
@@ -338,13 +345,20 @@ public OnIncomingPacket(playerid, packetid, BitStream:bs) {
             new unoccupiedData[PR_UnoccupiedSync];
             BS_IgnoreBits(bs, 8);
             BS_ReadUnoccupiedSync(bs, unoccupiedData);
-            if (floatcmp(floatabs(unoccupiedData[PR_roll][0]), 1.00000) == 1 || floatcmp(floatabs(unoccupiedData[PR_roll][1]), 1.00000) == 1 || 
-                floatcmp(floatabs(unoccupiedData[PR_roll][2]), 1.00000) == 1 || floatcmp(floatabs(unoccupiedData[PR_direction][0]), 1.00000) == 1 || 
-                floatcmp(floatabs(unoccupiedData[PR_direction][1]), 1.00000) == 1 || floatcmp(floatabs(unoccupiedData[PR_direction][2]), 1.00000) == 1 || 
-                floatcmp(floatabs(unoccupiedData[PR_position][0]), 20000.00000) == 1 || floatcmp(floatabs(unoccupiedData[PR_position][1]), 20000.00000) == 1 || 
-                floatcmp(floatabs(unoccupiedData[PR_position][2]), 20000.00000) == 1 || floatcmp(floatabs(unoccupiedData[PR_angularVelocity][0]), 1.00000) == 1 || 
-                floatcmp(floatabs(unoccupiedData[PR_angularVelocity][1]), 1.00000) == 1 || floatcmp(floatabs(unoccupiedData[PR_angularVelocity][2]), 1.00000) == 1 || 
-                floatcmp(floatabs(unoccupiedData[PR_velocity][0]), 100.00000) == 1 || floatcmp(floatabs(unoccupiedData[PR_velocity][1]), 100.00000) == 1 || 
+            if (floatcmp(floatabs(unoccupiedData[PR_roll][0]), 1.00000) == 1 || 
+            	floatcmp(floatabs(unoccupiedData[PR_roll][1]), 1.00000) == 1 || 
+                floatcmp(floatabs(unoccupiedData[PR_roll][2]), 1.00000) == 1 || 
+                floatcmp(floatabs(unoccupiedData[PR_direction][0]), 1.00000) == 1 || 
+                floatcmp(floatabs(unoccupiedData[PR_direction][1]), 1.00000) == 1 || 
+                floatcmp(floatabs(unoccupiedData[PR_direction][2]), 1.00000) == 1 || 
+                floatcmp(floatabs(unoccupiedData[PR_position][0]), 20000.00000) == 1 || 
+                floatcmp(floatabs(unoccupiedData[PR_position][1]), 20000.00000) == 1 || 
+                floatcmp(floatabs(unoccupiedData[PR_position][2]), 20000.00000) == 1 || 
+                floatcmp(floatabs(unoccupiedData[PR_angularVelocity][0]), 1.00000) == 1 || 
+                floatcmp(floatabs(unoccupiedData[PR_angularVelocity][1]), 1.00000) == 1 || 
+                floatcmp(floatabs(unoccupiedData[PR_angularVelocity][2]), 1.00000) == 1 || 
+                floatcmp(floatabs(unoccupiedData[PR_velocity][0]), 100.00000) == 1 || 
+                floatcmp(floatabs(unoccupiedData[PR_velocity][1]), 100.00000) == 1 || 
                 floatcmp(floatabs(unoccupiedData[PR_velocity][2]), 100.00000) == 1) {
                 return false;
             }
@@ -363,13 +377,15 @@ public OnIncomingPacket(playerid, packetid, BitStream:bs) {
 
 public OnClientCheckResponse(playerid, actionid, memaddr, retndata) {
 	if (actionid == 0x45) {
-		if (memaddr == 0x3A9EB) {
-			if (!AC_Player[playerid][pLastData]) {
-				AC_Player[playerid][pLastData] = retndata;
-			}
-			else {
-				if (retndata != AC_Player[playerid][pLastData]) {
-					AC_DetectCheat(playerid, CHEAT_SOBFOX);
+		for (new i; i < sizeof(Memory); i++) {
+			if (memaddr == Memory[i][AC_memoryAddress]) {
+				if (!AC_Player[playerid][pLastData]) {
+					AC_Player[playerid][pLastData] = retndata;
+				}
+				else {
+					if (retndata != AC_Player[playerid][pLastData]) {
+						AC_DetectCheat(playerid, CHEAT_SOBFOX);
+					}
 				}
 			}
 		}
@@ -397,9 +413,8 @@ public OnClientCheckResponse(playerid, actionid, memaddr, retndata) {
 		}
 	}
 	else if (actionid == 0x5) {
-    	for (new i = AC_Player[playerid][pCheckStep]; i < sizeof(Memory); i++) {
-			AC_Player[playerid][pCheckStep]++;
-			if (memaddr == AC_AnotherForm(Memory[i][AC_memoryAddress]) && retndata != Memory[i][AC_retndata]) {
+    	for (new i; i < sizeof(Memory); i++) {
+			if (memaddr == AC_Encode(Memory[i][AC_memoryAddress]) && retndata != Memory[i][AC_retndata]) {
 				new reason;
 				switch (i) {
 					case 0..4: reason = CHEAT_SOBEIT;
@@ -447,7 +462,6 @@ static AC_CleanPlayerData(playerid) {
 	AC_Player[playerid][pMobileUser] = false;
 	AC_Player[playerid][pSuspicious] = false;
 	AC_Player[playerid][pLastUpdate] = 0;
-	AC_Player[playerid][pCheckStep] = 0;
 	AC_Player[playerid][pGarageTick] = 0;
 	AC_Player[playerid][pLastData] = 0;
 	return true;
@@ -467,7 +481,7 @@ static IsPlayerInsideModGarage(playerid) {
 	return false;
 }
 
-static AC_AnotherForm(input) {
+static AC_Encode(input) {
     new result;
  
     #emit LOAD.S.pri input
