@@ -121,7 +121,11 @@ enum AC_Data {
 };
 
 new Memory[][AC_Data] = {
-	{0x47, 0x0, 0, 0x4, 0},
+	{0x45, 0x3A9EB, 0, 0x4, 0},
+	{0x45, 0x3AEB9, 0, 0x4, 0},
+	{0x45, 0x3AD8D, 0, 0x4, 0},
+	{0x45, 0x3A7F2, 0, 0x4, 0},
+	{0x47, 0, 0, 0x4, 0},
 	{0x48, 0, 0, 0x4, 0},
 	{0x5, 0x06865E, 0x0, 0x4, 192},
 	{0x5, 0x5242CD, 0x0, 0x4, 204},
@@ -204,9 +208,13 @@ static ScriptExit() {
 
 public OnPlayerConnect(playerid) {
 	AC_CleanPlayerData(playerid);
-	SendClientCheck(playerid, 0x45, 0x3A9EB, 0, 0x4);
 	for (new i; i < sizeof(Memory); i++) {
-		SendClientCheck(playerid, Memory[i][AC_type], AC_AnotherForm(Memory[i][AC_memoryAddress]), Memory[i][AC_memoryOffset], Memory[i][AC_byteCount]);
+		if (Memory[i][AC_type] == 0x5)
+			SendClientCheck(playerid, Memory[i][AC_type], AC_Encode(Memory[i][AC_memoryAddress]), Memory[i][AC_memoryOffset], Memory[i][AC_byteCount]);
+		}
+		else {
+			SendClientCheck(playerid, Memory[i][AC_type], Memory[i][AC_memoryAddress], Memory[i][AC_memoryOffset], Memory[i][AC_byteCount]);
+		}
 	}
 	if (!AC_Player[playerid][pMobileUser]) {
 		if (!IsPlayerUsingOmp(playerid)) {
@@ -363,13 +371,15 @@ public OnIncomingPacket(playerid, packetid, BitStream:bs) {
 
 public OnClientCheckResponse(playerid, actionid, memaddr, retndata) {
 	if (actionid == 0x45) {
-		if (memaddr == 0x3A9EB) {
-			if (!AC_Player[playerid][pLastData]) {
-				AC_Player[playerid][pLastData] = retndata;
-			}
-			else {
-				if (retndata != AC_Player[playerid][pLastData]) {
-					AC_DetectCheat(playerid, CHEAT_SOBFOX);
+		for (new i; i < sizeof(Memory); i++) {
+			if (memaddr == AC_Encode(Memory[i][AC_memoryAddress])) {
+				if (!AC_Player[playerid][pLastData]) {
+					AC_Player[playerid][pLastData] = retndata;
+				}
+				else {
+					if (retndata != AC_Player[playerid][pLastData]) {
+						AC_DetectCheat(playerid, CHEAT_SOBFOX);
+					}
 				}
 			}
 		}
@@ -397,9 +407,8 @@ public OnClientCheckResponse(playerid, actionid, memaddr, retndata) {
 		}
 	}
 	else if (actionid == 0x5) {
-    	for (new i = AC_Player[playerid][pCheckStep]; i < sizeof(Memory); i++) {
-			AC_Player[playerid][pCheckStep]++;
-			if (memaddr == AC_AnotherForm(Memory[i][AC_memoryAddress]) && retndata != Memory[i][AC_retndata]) {
+    	for (new i; i < sizeof(Memory); i++) {
+			if (memaddr == AC_Encode(Memory[i][AC_memoryAddress]) && retndata != Memory[i][AC_retndata]) {
 				new reason;
 				switch (i) {
 					case 0..4: reason = CHEAT_SOBEIT;
@@ -467,7 +476,7 @@ static IsPlayerInsideModGarage(playerid) {
 	return false;
 }
 
-static AC_AnotherForm(input) {
+static AC_Encode(input) {
     new result;
  
     #emit LOAD.S.pri input
