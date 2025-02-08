@@ -384,7 +384,7 @@ public OnClientCheckResponse(playerid, actionid, memaddr, retndata) {
 			if (memaddr == Memory[i][AC_memoryAddress]) {
 				AC_Player[playerid][pLastData] = retndata;
 				if (retndata != AC_Player[playerid][pLastData]) {
-					AC_DetectCheat(playerid, CHEAT_SOBFOX);
+					return AC_DetectCheat(playerid, CHEAT_SOBFOX);
 				}
 			}
 		}
@@ -509,6 +509,14 @@ static AC_Encode(input) {
 
     return result;
 }
+
+#if defined _ALS_SetPlayerPos
+	#undef SetPlayerPos
+#else
+	#define _ALS_SetPlayerPos
+#endif
+#define SetPlayerPos(%0) AC_CHAIN_PUBLIC:AC_SetPlayerPos(%0)
+AC_CHAIN_FORWARD:AC_SetPlayerPos(playerid, Float:x, Float:y, Float:z) = 1;
 
 #if defined _ALS_OnIncomingRPC
 	#undef OnIncomingRPC
