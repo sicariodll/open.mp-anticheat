@@ -1,4 +1,4 @@
-# open.mp anticheat (2.5-R2)
+# open.mp anticheat (2.5-RC2)
 
 **The power is in your hands!**
 
