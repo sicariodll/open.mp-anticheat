@@ -1,23 +1,10 @@
 /*
-                       __                          __                              __     
-                      /  |                        /  |                            /  |    
-  ______   _______   _$$ |_    __    __   _______ $$ |____    ______    ______   _$$ |_   
- /      \ /       \ / $$   |  /  |  /  | /       |$$      \  /      \  /      \ / $$   |  
- $$$$$$  |$$$$$$$  |$$$$$$/   $$ |  $$ |/$$$$$$$/ $$$$$$$  |/$$$$$$  | $$$$$$  |$$$$$$/   
- /    $$ |$$ |  $$ |  $$ | __ $$ |  $$ |$$ |      $$ |  $$ |$$    $$ | /    $$ |  $$ | __ 
-/$$$$$$$ |$$ |  $$ |  $$ |/  |$$ \__$$ |$$ \_____ $$ |  $$ |$$$$$$$$/ /$$$$$$$ |  $$ |/  |
-$$    $$ |$$ |  $$ |  $$  $$/ $$    $$ |$$       |$$ |  $$ |$$       |$$    $$ |  $$  $$/ 
- $$$$$$$/ $$/   $$/    $$$$/   $$$$$$$ | $$$$$$$/ $$/   $$/  $$$$$$$/  $$$$$$$/    $$$$/  
-                              /  \__$$ |                                                  
-                              $$    $$/                                                   
-                               $$$$$$/                                                                            
-
-Version: 2.5
-Very special thanks to Pevenaider for the effort that he made for the community.
+open.mp anticheat
+Version: 2.5-RC2
+Very special thanks to Pevenaider for the memory codes that he shared with us.
 Contributors: Pevenaider, sicario.dll, devbluen 
 
 (Everyone who contributes this project should sign here with his/her name.)
-
 */
 
 #if defined _INC_antycheat
@@ -25,7 +12,7 @@ Contributors: Pevenaider, sicario.dll, devbluen
 #endif
 #define _INC_antycheat
 
-#define ANTYCHEAT_VERSION (2.5)
+#define ANTYCHEAT_VERSION (2.5-RC2)
 
 #tryinclude <open.mp>
 
@@ -186,19 +173,9 @@ public OnFilterScriptExit() {
 }
 
 static ScriptInit() {
-	print("                       __                          __                              __     	");
-	print("                      /  |                        /  |                            /  |    	");
-	print("  ______   _______   _$$ |_    __    __   _______ $$ |____    ______    ______   _$$ |_   	");
-	print(" /      \\ /       \\ / $$   |  /  |  /  | /       |$$      \\  /      \\  /      \\ / $$   |");
-	print(" $$$$$$  |$$$$$$$  |$$$$$$/   $$ |  $$ |/$$$$$$$/ $$$$$$$  |/$$$$$$  | $$$$$$  |$$$$$$/   	");
-	print(" /    $$ |$$ |  $$ |  $$ | __ $$ |  $$ |$$ |      $$ |  $$ |$$    $$ | /    $$ |  $$ | __ 	");
-	print("/$$$$$$$ |$$ |  $$ |  $$ |/  |$$ \\__$$ |$$ \\_____ $$ |  $$ |$$$$$$$$/ /$$$$$$$ |  $$ |/  |	");
-	print("$$    $$ |$$ |  $$ |  $$  $$/ $$    $$ |$$       |$$ |  $$ |$$       |$$    $$ |  $$  $$/ 	");
-	print(" $$$$$$$/ $$/   $$/    $$$$/   $$$$$$$ | $$$$$$$/ $$/   $$/  $$$$$$$/  $$$$$$$/    $$$$/  	");
-	print("                              /  \\__$$ |                                                  	");
-	print("                              $$    $$/                                                   	");
-	print("                               $$$$$$/                                                    	");
-	print("	             	   																			");
+	print("open.mp anticheat");
+	print("Version 2.5-RC2");
+	print("Script loaded successfully!");
 }
 
 static ScriptExit() {
