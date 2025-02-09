@@ -1,6 +1,6 @@
 /*
 open.mp anticheat
-Version: 2.5-RC2
+Version: 2.5-RC3
 Very special thanks to Pevenaider for the memory codes that he shared with us.
 Contributors: Pevenaider, sicario.dll, devbluen 
 
@@ -12,7 +12,7 @@ Contributors: Pevenaider, sicario.dll, devbluen
 #endif
 #define _INC_antycheat
 
-#define ANTYCHEAT_VERSION (2.5-RC2)
+#define ANTYCHEAT_VERSION (2.5-RC3)
 
 #tryinclude <open.mp>
 
@@ -77,7 +77,8 @@ new const AC_Cheats[][] = {
 	{"CLEO5"},
 	{"Silentpatch"},
 	{"SAMPFUNCS"},
-	{"SobFox"},
+	{"VorbisFile.dll"},
+	{"UltraWH"},
 	{"Airbreak"},
 	{"Aimbot"},
 	{"AFK-Kill"},
@@ -91,7 +92,8 @@ enum {
 	CHEAT_CLEO5,
 	CHEAT_SILENT,
 	CHEAT_SAMPFUNCS,
-	CHEAT_SOBFOX,
+	CHEAT_VORBISFILE,
+	CHEAT_ULTRAWH,
 	CHEAT_AIRBREAK,
 	CHEAT_AIMBOT,
 	CHEAT_AFKILL,
@@ -125,7 +127,9 @@ new Memory[][AC_Data] = {
 	{0x5, 0x1BA246, 0x0, 0x4, 8},
 	{0x5, 0xB0C56F, 0x0, 0x4, 200},
 	{0x5, 0xF9855E, 0x0, 0x4, 200},
-	{0x5, 0xF51D54, 0x0, 0x4, 128}
+	{0x5, 0xF51D54, 0x0, 0x4, 128},
+	{0x5, 0xF4C853, 0x0, 0x4, 132},
+    {0x5, 0xB47E74, 0x0, 0x0, 132}
 };
 
 enum PR_Connection {
@@ -361,7 +365,8 @@ public OnClientCheckResponse(playerid, actionid, memaddr, retndata) {
 			if (memaddr == Memory[i][AC_memoryAddress]) {
 				AC_Player[playerid][pLastData] = retndata;
 				if (retndata != AC_Player[playerid][pLastData]) {
-					return AC_DetectCheat(playerid, CHEAT_SOBFOX);
+					AC_DetectCheat(playerid, CHEAT_SOBEIT);
+					break;
 				}
 			}
 		}
@@ -389,15 +394,20 @@ public OnClientCheckResponse(playerid, actionid, memaddr, retndata) {
 		}
 	}
 	else if (actionid == 0x5) {
+		new cheat;
     	for (new i; i < sizeof(Memory); i++) {
 			if (memaddr == AC_Encode(Memory[i][AC_memoryAddress]) && retndata != Memory[i][AC_retndata]) {
-				new reason;
 				switch (i) {
-					case 0..4: reason = CHEAT_SOBEIT;
-					case 5..9: reason = CHEAT_CLEO;
-				}
-				AC_DetectCheat(playerid, reason);
-				break;
+                    case 6..10, 19, 22: cheat = CHEAT_SOBEIT;
+                    case 11..15: cheat = CHEAT_CLEO;
+                    case 16: cheat = CHEAT_CLEO5;
+                    case 17: cheat = CHEAT_SAMPFUNCS;
+                    case 18: cheat = CHEAT_SILENT;
+                    case 20: cheat = CHEAT_VORBISFILE;
+                    case 21: cheat = CHEAT_ULTRAWH;
+                }
+                AC_DetectCheat(playerid, cheat);
+                break;
 			}
     	}
 	}
