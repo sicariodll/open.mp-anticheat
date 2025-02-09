@@ -74,7 +74,6 @@ new Float:AC_Garages[3][3] = {
 new const AC_Cheats[][] = {
 	{"S0beit"},
 	{"CLEO"},
-	{"CLEO5"},
 	{"Silentpatch"},
 	{"SAMPFUNCS"},
 	{"VorbisFile.dll"},
@@ -89,7 +88,6 @@ new const AC_Cheats[][] = {
 enum {
 	CHEAT_SOBEIT,
 	CHEAT_CLEO,
-	CHEAT_CLEO5,
 	CHEAT_SILENT,
 	CHEAT_SAMPFUNCS,
 	CHEAT_VORBISFILE,
@@ -117,8 +115,6 @@ new Memory[][AC_Data] = {
 	{0x47, 0, 0, 0x4, 0},
 	{0x48, 0, 0, 0x4, 0},
 	{0x5, 0x06865E, 0x0, 0x4, 192},
-	{0x5, 0x5242CD, 0x0, 0x4, 204},
-	{0x5, 0x6EFBC7, 0x0, 0x4, 196},
 	{0x5, 0xA88774, 0x0, 0x4, 72},
 	{0x5, 0xDB6746, 0x0, 0x4, 192},
 	{0x5, 0xFDB957, 0x0, 0x4, 68},
@@ -129,7 +125,7 @@ new Memory[][AC_Data] = {
 	{0x5, 0xF9855E, 0x0, 0x4, 200},
 	{0x5, 0xF51D54, 0x0, 0x4, 128},
 	{0x5, 0xF4C853, 0x0, 0x4, 132},
-    {0x5, 0xB47E74, 0x0, 0x0, 132}
+	{0x5, 0xB47E74, 0x0, 0x4, 132}
 };
 
 enum PR_Connection {
@@ -394,17 +390,16 @@ public OnClientCheckResponse(playerid, actionid, memaddr, retndata) {
 		}
 	}
 	else if (actionid == 0x5) {
-		new cheat;
     	for (new i; i < sizeof(Memory); i++) {
 			if (memaddr == AC_Encode(Memory[i][AC_memoryAddress]) && retndata != Memory[i][AC_retndata]) {
+				new cheat;
 				switch (i) {
-                    case 6..10, 19, 22: cheat = CHEAT_SOBEIT;
-                    case 11..15: cheat = CHEAT_CLEO;
-                    case 16: cheat = CHEAT_CLEO5;
-                    case 17: cheat = CHEAT_SAMPFUNCS;
-                    case 18: cheat = CHEAT_SILENT;
-                    case 20: cheat = CHEAT_VORBISFILE;
-                    case 21: cheat = CHEAT_ULTRAWH;
+                    case 6, 15, 18: cheat = CHEAT_SOBEIT;
+                    case 7..12: cheat = CHEAT_CLEO;
+                    case 13: cheat = CHEAT_SILENT;
+                    case 14: cheat = CHEAT_SAMPFUNCS;
+                    case 16: cheat = CHEAT_VORBISFILE;
+                    case 17: cheat = CHEAT_ULTRAWH;
                 }
                 AC_DetectCheat(playerid, cheat);
                 break;
