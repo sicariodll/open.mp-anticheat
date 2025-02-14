@@ -7,12 +7,12 @@ Contributors: Pevenaider, sicario.dll, devbluen
 (Everyone who contributes this project should sign here with his/her name.)
 */
 
-#if defined _INC_antycheat
+#if defined _INC_anticheat
 	#endinput
 #endif
-#define _INC_antycheat
+#define _INC_anticheat
 
-#define ANTYCHEAT_VERSION (2.5-RC3)
+#define VERSION (2.5-RC3)
 
 #tryinclude <open.mp>
 
@@ -174,7 +174,7 @@ public OnFilterScriptExit() {
 
 static ScriptInit() {
 	print("open.mp anticheat");
-	print("Version 2.5-RC2");
+	printf("Version %s", VERSION);
 	print("Script loaded successfully!");
 }
 
@@ -611,3 +611,11 @@ AC_CHAIN_FORWARD:AC_OnPlayerWeaponShot(playerid, WEAPON:weaponid, BULLET_HIT_TYP
 #endif
 #define OnPlayerGiveDamage(%0) AC_CHAIN_PUBLIC:AC_OnPlayerGiveDamage(%0)
 AC_CHAIN_FORWARD:AC_OnPlayerGiveDamage(playerid, damagedid, Float:amount, WEAPON:weaponid, bodypart) = 1;
+
+#if defined _ALS_SetPlayerPos
+	#undef SetPlayerPos
+#else
+	#define _ALS_SetPlayerPos
+#endif
+#define SetPlayerPos(%0) AC_CHAIN_PUBLIC:AC_SetPlayerPos(%0)
+AC_CHAIN_FORWARD:AC_SetPlayerPos(playerid, Float:x, Float:y, Float:z) = 1;
