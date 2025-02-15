@@ -420,8 +420,11 @@ static AC_DetectCheat(playerid, cheat = -1) {
 
 forward AC_OnCheatDetected(playerid, cheat);
 public AC_OnCheatDetected(playerid, cheat) {
-	ErrorMessage(playerid, "System detected that you're probably using %s on this server.", AC_Cheats[cheat]);
-	InfoMessage(playerid, "If you're thinking that it's a mistake, just try to contact an administrator.");
+	if (AC_Player[playerid][pCooldown] < gettime()) {
+		ErrorMessage(playerid, "System detected that you're probably using %s on this server.", AC_Cheats[cheat]);
+		InfoMessage(playerid, "If you're thinking that it's a mistake, just try to contact an administrator.");
+		AC_Player[playerid][pCooldown] = gettime() + 100;
+	}
 	AC_Kick(playerid);
 	return true;
 }
@@ -446,6 +449,7 @@ static AC_CleanPlayerData(playerid) {
 	AC_Player[playerid][pGarageTick] = 0;
 	AC_Player[playerid][pLastData] = 0;
 	AC_Player[playerid][pLastData] = 0;
+	AC_Player[playerid][pCooldown] += 10;
 	return true;
 }
 
