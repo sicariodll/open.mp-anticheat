@@ -221,7 +221,7 @@ public OnPlayerUpdate(playerid) {
 		return AC_DetectCheat(playerid, CHEAT_AIRBREAK);
     }
     if (IsPlayerSpawned(playerid)) {
-        if (!IsPlayerInRangeOfPoint(playerid, 50.0, AC_Player[playerid][pLastPos][0], AC_Player[playerid][pLastPos][1], AC_Player[playerid][pLastPos][2])) {
+        if (GetPlayerDistanceFromPoint(playerid, AC_Player[playerid][pLastPos][0], AC_Player[playerid][pLastPos][1], AC_Player[playerid][pLastPos][2]) > 10.0) {
             if (!GetPVarInt(playerid, "Check_Teleport")) {
                 return AC_DetectCheat(playerid, CHEAT_TELEPORT);
             }
