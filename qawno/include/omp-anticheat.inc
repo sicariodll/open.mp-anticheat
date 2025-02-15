@@ -49,8 +49,8 @@ AC_CHAIN_HOOK(AC)
 static stock _AC_IncludeStates() <_ALS : _ALS_x0, _ALS : _ALS_x1, _ALS : _ALS_x2, _ALS : _ALS_x3> {}
 static stock _AC_IncludeStates() <_ALS : _ALS_go> {}
 
-#define InfoMessage(%0,%1) SendClientMessage(%0, 0xFFFF00AA, "[INFO] "%1)
-#define ErrorMessage(%0,%1) SendClientMessage(%0, 0xFF0000FF, "[ERROR] "%1)
+#define InfoMessage(%0,%1) SendClientMessage(%0, 0xFFFF00AA, "[i] "%1)
+#define ErrorMessage(%0,%1) SendClientMessage(%0, 0xFF0000FF, "[!] "%1)
 
 new Float:AC_Sprays[10][3] = {
 	{1025.05, -1024.23, 32.1},	// LS Temple
@@ -143,9 +143,11 @@ enum PR_Connection {
 enum AC_PlayerData {
 	bool:pMobileUser,
 	bool:pSuspicious,
+	Float:pLastPos,
 	pLastUpdate,
 	pGarageTick,
-	pLastData
+	pLastData,
+	pCooldown
 };
 
 new AC_Player[MAX_PLAYERS][AC_PlayerData];
@@ -219,14 +221,13 @@ public OnPlayerUpdate(playerid) {
 		return AC_DetectCheat(playerid, CHEAT_AIRBREAK);
     }
     if (IsPlayerSpawned(playerid)) {
-        new Float:AC_Pos[3];
-        GetPlayerPos(playerid, AC_Pos[0], AC_Pos[1], AC_Pos[2]);
-        if (!IsPlayerInRangeOfPoint(playerid, 50.0, AC_Pos[0], AC_Pos[1], AC_Pos[2])) {
+        if (!IsPlayerInRangeOfPoint(playerid, 50.0, AC_Player[playerid][pLastPos][0], AC_Player[playerid][pLastPos][1], AC_Player[playerid][pLastPos][2])) {
             if (!GetPVarInt(playerid, "Check_Teleport")) {
                 return AC_DetectCheat(playerid, CHEAT_TELEPORT);
             }
             else DeletePVar(playerid, "Check_Teleport");
         }
+        GetPlayerPos(playerid, AC_Player[playerid][pLastPos][0], AC_Player[playerid][pLastPos][1], AC_Player[playerid][pLastPos][2]);
     }
     if (GetPlayerState(playerid) == PLAYER_STATE:PLAYER_STATE_DRIVER) {
     	new vehicleid = GetPlayerVehicleID(playerid), Float:health;
@@ -450,6 +451,9 @@ static AC_CleanPlayerData(playerid) {
 	AC_Player[playerid][pLastData] = 0;
 	AC_Player[playerid][pLastData] = 0;
 	AC_Player[playerid][pCooldown] += 10;
+	for (new i; i < 3; i++) {
+		AC_Player[playerid][pLastPos][i] = 0.0;
+	}
 	return true;
 }
 
