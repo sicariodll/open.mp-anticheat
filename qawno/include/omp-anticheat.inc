@@ -309,18 +309,6 @@ public OnIncomingPacket(playerid, packetid, BitStream:bs) {
                     return AC_DetectCheat(playerid, CHEAT_SOBEIT);
                 }
             }
-            new BWH_OnFootData[PR_OnFootSync];
-            BS_IgnoreBits(bs, 8);
-            BS_ReadOnFootSync(bs, BWH_OnFootData);
-            BS_ResetReadPointer(bs);
-            if(BWH_OnFootData[PR_weaponId] == 4) {
-                BWH_OnFootData[PR_weaponId] = 0;
-                BS_SetWriteOffset(bs, 8);
-                BS_WriteOnFootSync(bs, BWH_OnFootData);
-            }
-            if(BWH_OnFootData[PR_weaponId] == 40) {
-                return AC_DetectCheat(playerid, CHEAT_SOBEIT);
-            }
         }
         case 209: {
             new unoccupiedData[PR_UnoccupiedSync];
