@@ -32,27 +32,27 @@ Contributors: Pevenaider, sicario.dll, devbluen
 	#error colandreas.inc is required. (You must include it to use this include as well.)
 #endif
 
-#if !defined AC_CHAIN_ORDER
-	#define AC_CHAIN_ORDER() 0
+#if !defined CHAIN_ORDER
+	#define CHAIN_ORDER() 0
 #endif
 
-#define AC_CHAIN_HOOK(%0) forward @ACCO_%0();public @ACCO_%0(){return AC_CHAIN_ORDER()+1;}
-#define AC_CHAIN_NEXT(%0) @ACCO_%0
+#define CHAIN_HOOK(%0) forward @ACCO_%0();public @ACCO_%0(){return CHAIN_ORDER()+1;}
+#define CHAIN_NEXT(%0) @ACCO_%0
 
-#define AC_CHAIN_PUBLIC:%0(%1) %0(%1) <_ALS : _ALS_go>
-#define AC_CHAIN_FORWARD:%0_%2(%1)=%3; forward %0_%2(%1); public %0_%2(%1) <_ALS : _ALS_x0, _ALS : _ALS_x1> {return (%3);} public %0_%2(%1) <> {return (%3);}
+#define CHAIN_PUBLIC:%0(%1) %0(%1) <_ALS : _ALS_go>
+#define CHAIN_FORWARD:%0_%2(%1)=%3; forward %0_%2(%1); public %0_%2(%1) <_ALS : _ALS_x0, _ALS : _ALS_x1> {return (%3);} public %0_%2(%1) <> {return (%3);}
 
-AC_CHAIN_HOOK(AC)
-#undef AC_CHAIN_ORDER
-#define AC_CHAIN_ORDER AC_CHAIN_NEXT(AC)
+CHAIN_HOOK(AC)
+#undef CHAIN_ORDER
+#define CHAIN_ORDER CHAIN_NEXT(AC)
 
-static stock _AC_IncludeStates() <_ALS : _ALS_x0, _ALS : _ALS_x1, _ALS : _ALS_x2, _ALS : _ALS_x3> {}
-static stock _AC_IncludeStates() <_ALS : _ALS_go> {}
+static stock _IncludeStates() <_ALS : _ALS_x0, _ALS : _ALS_x1, _ALS : _ALS_x2, _ALS : _ALS_x3> {}
+static stock _IncludeStates() <_ALS : _ALS_go> {}
 
 #define InfoMessage(%0,%1) SendClientMessage(%0, 0xFFFF00AA, "[i] "%1)
 #define ErrorMessage(%0,%1) SendClientMessage(%0, 0xFF0000FF, "[!] "%1)
 
-new Float:AC_Sprays[10][3] = {
+new Float:Sprays[10][3] = {
 	{1025.05, -1024.23, 32.1},	// LS Temple
 	{487.68, -1740.87, 11.13},	// LS Santa Maria
 	{-1420.73, 2583.37, 55.56},	// El Quebrados
@@ -65,13 +65,13 @@ new Float:AC_Sprays[10][3] = {
 	{2393.74, 1493.01, 10.52} 	// LV Unused (Pyramid)
 };
 
-new Float:AC_Garages[3][3] = {
+new Float:Garages[3][3] = {
 	{611.35, -77.55, 997.99},	// Loco Low Co.
 	{612.21, -123.90, 997.99},	// Wheel Arch Angels.
 	{621.45, -23.72, 1000.92} 	// TransFender
 };
 
-new const AC_Cheats[][] = {
+new const Cheats[][] = {
 	{"S0beit"},
 	{"CLEO"},
 	{"Silentpatch"},
@@ -106,15 +106,15 @@ enum {
 	CHEAT_EXPLOIT
 };
 
-enum AC_Data {
-	AC_type,
-	AC_memoryAddress,
-	AC_memoryOffset,
-	AC_byteCount,
-	AC_retndata
+enum Data {
+	type,
+	memoryAddress,
+	memoryOffset,
+	byteCount,
+	retndata
 };
 
-new Memory[][AC_Data] = {
+new Memory[][Data] = {
 	{0x45, 0x3A9EB, 0, 0x4, 0},
 	{0x45, 0x3AEB9, 0, 0x4, 0},
 	{0x45, 0x3AD8D, 0, 0x4, 0},
@@ -147,7 +147,7 @@ enum PR_Connection {
     PR_pClientVersion[30]
 };
 
-enum AC_PlayerData {
+enum PlayerData {
 	bool:pMobileUser,
 	bool:pSuspicious,
 	Float:pLastPos,
@@ -157,28 +157,28 @@ enum AC_PlayerData {
 	pCooldown
 };
 
-new AC_Player[MAX_PLAYERS][AC_PlayerData];
+new Player[MAX_PLAYERS][PlayerData];
 
 public OnGameModeInit() {
 	state _ALS : _ALS_go;
 	ScriptInit();
-	return AC_OnGameModeInit();
+	return OnGameModeInit();
 }
 
 public OnGameModeExit() {
 	ScriptExit();
-	return AC_OnGameModeExit();
+	return OnGameModeExit();
 }
 
 public OnFilterScriptInit() {
 	state _ALS : _ALS_go;
 	ScriptInit();
-	return AC_OnFilterScriptInit();
+	return OnFilterScriptInit();
 }
 
 public OnFilterScriptExit() {
 	ScriptExit();
-	return AC_OnFilterScriptExit();
+	return OnFilterScriptExit();
 }
 
 static ScriptInit() {
@@ -192,92 +192,107 @@ static ScriptExit() {
 }
 
 public OnPlayerConnect(playerid) {
-	AC_CleanPlayerData(playerid);
+	CleanPlayerData(playerid);
 	for (new i; i < sizeof(Memory); i++) {
-		if (Memory[i][AC_type] == 0x5)
-			SendClientCheck(playerid, Memory[i][AC_type], AC_Encode(Memory[i][AC_memoryAddress]), Memory[i][AC_memoryOffset], Memory[i][AC_byteCount]);
+		if (Memory[i][type] == 0x5)
+			SendClientCheck(playerid, Memory[i][type], Encode(Memory[i][memoryAddress]), Memory[i][memoryOffset], Memory[i][byteCount]);
 		}
 		else {
-			SendClientCheck(playerid, Memory[i][AC_type], Memory[i][AC_memoryAddress], Memory[i][AC_memoryOffset], Memory[i][AC_byteCount]);
+			SendClientCheck(playerid, Memory[i][type], Memory[i][memoryAddress], Memory[i][memoryOffset], Memory[i][byteCount]);
 		}
 	}
-	if (!AC_Player[playerid][pMobileUser]) {
+	if (!Player[playerid][pMobileUser]) {
 		if (!IsPlayerUsingOmp(playerid)) {
 			ErrorMessage(playerid, "Computer players must use open.mp launcher to play on this server!");
-			return AC_Kick(playerid);
+			return KickEx(playerid);
 		}
 		new version[24];
 		GetPlayerVersion(playerid, version, sizeof(version));
 		if (!strcmp(version, "0.3.7", true)) {
 			ErrorMessage(playerid, "You should select an higher version than 0.3.7-R1!");
-			return AC_Kick(playerid);
+			return KickEx(playerid);
 		}
 	}
-	return AC_OnPlayerConnect(playerid);
+	return OnPlayerConnect(playerid);
 }
 
 public OnPlayerDisconnect(playerid, reason) {
-	AC_CleanPlayerData(playerid);
-	return AC_OnPlayerDisconnect(playerid, reason);
+	CleanPlayerData(playerid);
+	return OnPlayerDisconnect(playerid, reason);
 }
 
 public OnPlayerUpdate(playerid) {
-	AC_Player[playerid][pLastUpdate] = GetTickCount();
+	Player[playerid][pLastUpdate] = GetTickCount();
+	if (GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) {
+        if (GetPlayerSpeed(playerid) > 185)
+            return DetectCheat(playerid, CHEAT_SLAPPER);
+
+        if (GetPlayerSpeed(playerid) > 10 && (GetPlayerAnimationIndex(playerid) == 1130 || GetPlayerAnimationIndex(playerid) == 1189) && GetPlayerDistanceFromPoint(playerid, Player[playerid][pLastPos][0], Player[playerid][pLastPos][1], Player[playerid][pLastPos][2]) > 30.0)
+            return DetectCheat(playerid, CHEAT_AIRBREAK);
+    }
+    if (GetPlayerState(playerid) == PLAYER_STATE_DRIVER) {
+        new vehicleid = GetPlayerVehicleID(playerid);
+        if (GetVehicleSpeed(playerid) > 310)
+            return DetectCheat(playerid, CHEAT_SLAPPER);
+
+        if (GetVehicleSpeed(vehicleid) > 10 && GetPlayerDistanceFromPoint(playerid, Player[playerid][pLastPos][0], Player[playerid][pLastPos][1], Player[playerid][pLastPos][2]) > 30.0)
+            return DetectCheat(playerid, CHEAT_AIRBREAK);
+    }
 	new Float:depth = 5.0, Float:playerdepth = 5.0;
 	if (!CA_IsPlayerInWater(playerid, depth, playerdepth) && (GetPlayerAnimationIndex(playerid) == 1538 || GetPlayerAnimationIndex(playerid) == 1539 || GetPlayerAnimationIndex(playerid) == 1543))
-		return AC_DetectCheat(playerid, CHEAT_AIRBREAK);
+		return DetectCheat(playerid, CHEAT_AIRBREAK);
 
     if (IsPlayerSpawned(playerid)) {
-        if (GetPlayerDistanceFromPoint(playerid, AC_Player[playerid][pLastPos][0], AC_Player[playerid][pLastPos][1], AC_Player[playerid][pLastPos][2]) > 10.0) {
+        if (GetPlayerDistanceFromPoint(playerid, Player[playerid][pLastPos][0], Player[playerid][pLastPos][1], Player[playerid][pLastPos][2]) > 10.0) {
             if (!GetPVarInt(playerid, "Check_Teleport"))
-                return AC_DetectCheat(playerid, CHEAT_TELEPORT);
+                return DetectCheat(playerid, CHEAT_TELEPORT);
 
             else DeletePVar(playerid, "Check_Teleport");
         }
-        GetPlayerPos(playerid, AC_Player[playerid][pLastPos][0], AC_Player[playerid][pLastPos][1], AC_Player[playerid][pLastPos][2]);
+        GetPlayerPos(playerid, Player[playerid][pLastPos][0], Player[playerid][pLastPos][1], Player[playerid][pLastPos][2]);
     }
     if (GetPlayerState(playerid) == PLAYER_STATE:PLAYER_STATE_DRIVER) {
     	new vehicleid = GetPlayerVehicleID(playerid), Float:health;
     	GetVehicleHealth(vehicleid, health);
-    	if (health > 999.9 && (gettime() - AC_Player[playerid][pGarageTick])) {
+    	if (health > 999.9 && (gettime() - Player[playerid][pGarageTick])) {
     		SetVehicleHealth(vehicleid, 999.9);
-    		AC_Player[playerid][pGarageTick] = gettime();
+    		Player[playerid][pGarageTick] = gettime();
     		if (!IsPlayerInsidePaySpray(playerid) && !IsPlayerInsideModGarage(playerid))
-    			return AC_DetectCheat(playerid, CHEAT_REPAIR);
+    			return DetectCheat(playerid, CHEAT_REPAIR);
     	}
     }
-	return AC_OnPlayerUpdate(playerid);
+	return OnPlayerUpdate(playerid);
 }
 
 public OnPlayerSpawn(playerid) {
-	for (new i; i < sizeof(Memory); i++) if (Memory[i][AC_type] == 0x45)
-		SendClientCheck(playerid, Memory[i][AC_type], Memory[i][AC_memoryAddress], Memory[i][AC_memoryOffset], Memory[i][AC_byteCount]);
+	for (new i; i < sizeof(Memory); i++) if (Memory[i][type] == 0x45)
+		SendClientCheck(playerid, Memory[i][type], Memory[i][memoryAddress], Memory[i][memoryOffset], Memory[i][byteCount]);
 
-	AC_Player[playerid][pLastUpdate] = GetTickCount();
-	return AC_OnPlayerSpawn(playerid);
+	Player[playerid][pLastUpdate] = GetTickCount();
+	return OnPlayerSpawn(playerid);
 }
 
 public OnPlayerWeaponShot(playerid, WEAPON:weaponid, BULLET_HIT_TYPE:hittype, hitid, Float:fX, Float:fY, Float:fZ) {
 	if (hittype != BULLET_HIT_TYPE:BULLET_HIT_TYPE_NONE) {
 		if ((fX < -1000.0 || fX > 1000.0) || (fY < -1000.0 || fY > 1000.0) || (fZ < -1000.0 || fZ > 1000.0))
-            return AC_DetectCheat(playerid, CHEAT_AIMBOT);
+            return DetectCheat(playerid, CHEAT_AIMBOT);
 	}
 	if (fX > 2140000000 || fY > 2140000000 || fZ > 2140000000)
-        return AC_DetectCheat(playerid, CHEAT_AIMBOT);
+        return DetectCheat(playerid, CHEAT_AIMBOT);
 
-	return AC_OnPlayerWeaponShot(playerid, WEAPON:weaponid, BULLET_HIT_TYPE:hittype, hitid, Float:fX, Float:fY, Float:fZ);
+	return OnPlayerWeaponShot(playerid, WEAPON:weaponid, BULLET_HIT_TYPE:hittype, hitid, Float:fX, Float:fY, Float:fZ);
 }
 
 public OnPlayerGiveDamage(playerid, damagedid, Float:amount, WEAPON:weaponid, bodypart) {
-	if (AC_IsPlayerPaused(playerid))
-		return AC_DetectCheat(playerid, CHEAT_AFKILL);
+	if (IsPlayerPaused(playerid))
+		return DetectCheat(playerid, CHEAT_AFKILL);
 
-	return AC_OnPlayerGiveDamage(playerid, damagedid, Float:amount, WEAPON:weaponid, bodypart);
+	return OnPlayerGiveDamage(playerid, damagedid, Float:amount, WEAPON:weaponid, bodypart);
 }
 
 public OnPlayerRequestClass(playerid, classid) {
 	SendClientCheck(playerid, 0x45, 0x3A9EB, 0, 0x4);
-	return AC_OnPlayerRequestClass(playerid, classid);
+	return OnPlayerRequestClass(playerid, classid);
 }
 
 public OnIncomingRPC(playerid, rpcid, BitStream:bs) {
@@ -299,9 +314,9 @@ public OnIncomingRPC(playerid, rpcid, BitStream:bs) {
 	    BS_ReadValue(bs, PR_STRING, data[PR_pClientVersion], (data[PR_pClientVerLen] >= 30 ? 30:data[PR_pClientVerLen]));
 	    new checksum;
 	    BS_ReadUint16(bs, checksum);
-	    AC_Player[playerid][pMobileUser] = (checksum == 0xBEEF) ? (true) : (false);
+	    Player[playerid][pMobileUser] = (checksum == 0xBEEF) ? (true) : (false);
 	}
-    return AC_OnIncomingRPC(playerid, rpcid, BitStream:bs);
+    return OnIncomingRPC(playerid, rpcid, BitStream:bs);
 }
 
 public OnIncomingPacket(playerid, packetid, BitStream:bs) {
@@ -426,10 +441,10 @@ public OnClientCheckResponse(playerid, actionid, memaddr, retndata) {
 
     if (actionid == 0x45) {
         for (new i; i < sizeof(Memory); i++) {
-            if (memaddr == Memory[i][AC_memoryAddress]) {
+            if (memaddr == Memory[i][memoryAddress]) {
                 Player[playerid][pLastData] = retndata;
                 if (retndata != Player[playerid][pLastData]) {
-                    AC_DetectCheat(playerid, CHEAT_SOBEIT);
+                    DetectCheat(playerid, CHEAT_SOBEIT);
                     break;
                 }
             }
@@ -437,19 +452,19 @@ public OnClientCheckResponse(playerid, actionid, memaddr, retndata) {
     }
     else if (actionid == 0x47) {
         if (memaddr == 0xCECECE && retndata == 256) {
-            AC_DetectCheat(playerid, CHEAT_BADPACK);
+            DetectCheat(playerid, CHEAT_BADPACK);
             return false;
         }
     }
     else if (actionid == 0x48) {
         if (memaddr == 0xDEDEDE && retndata == 256) {
-            AC_DetectCheat(playerid, CHEAT_BADPACK);
+            DetectCheat(playerid, CHEAT_BADPACK);
             return false;
         }
     }
     else if (actionid == 0x5) {
         for (new i; i < sizeof(Memory); i++) {
-            if (memaddr == AC_EncodeMemory(Memory[i][AC_memoryAddress]) && retndata != Memory[i][AC_retndata]) {
+            if (memaddr == EncodeMemory(Memory[i][memoryAddress]) && retndata != Memory[i][retndata]) {
                 new cheat;
                 switch (i) {
                     case 6, 15, 17: cheat = CHEAT_SOBEIT;
@@ -458,76 +473,89 @@ public OnClientCheckResponse(playerid, actionid, memaddr, retndata) {
                     case 14: cheat = CHEAT_SAMPFUNCS;
                     case 16: cheat = CHEAT_ULTRAWH;
                 }
-                AC_DetectCheat(playerid, cheat);
+                DetectCheat(playerid, cheat);
                 break;
             }
         }
     }
-    return AC_OnClientCheckResponse(playerid, actionid, memaddr, retndata);
+    return OnClientCheckResponse(playerid, actionid, memaddr, retndata);
 }
 
-stock AC_SetPlayerPos(playerid, Float:x, Float:y, Float:z) {
+stock SetPlayerPos(playerid, Float:x, Float:y, Float:z) {
 	SetPVarInt(playerid, "Check_Teleport", 1);
 	return SetPlayerPos(playerid, x, y, z);
 }
 
-static AC_DetectCheat(playerid, cheat = -1) {
-	return CallLocalFunction("AC_OnCheatDetected", "ii", playerid, cheat);
+static DetectCheat(playerid, cheat = -1) {
+	return CallLocalFunction("OnCheatDetected", "ii", playerid, cheat);
 }
 
-forward AC_OnCheatDetected(playerid, cheat);
-public AC_OnCheatDetected(playerid, cheat) {
-	if (AC_Player[playerid][pCooldown] < gettime()) {
-		ErrorMessage(playerid, "System detected that you're probably using %s on this server.", AC_Cheats[cheat]);
+forward OnCheatDetected(playerid, cheat);
+public OnCheatDetected(playerid, cheat) {
+	if (Player[playerid][pCooldown] < gettime()) {
+		ErrorMessage(playerid, "System detected that you're probably using %s on this server.", Cheats[cheat]);
 		InfoMessage(playerid, "If you're thinking that it's a mistake, just try to contact an administrator.");
-		AC_Player[playerid][pCooldown] = gettime() + 100;
+		Player[playerid][pCooldown] = gettime() + 100;
 	}
-	AC_Kick(playerid);
+	KickEx(playerid);
 	return true;
 }
 
-static AC_Kick(playerid) {
-	return SetTimerEx("AC_DisconnectPlayer", 500, false, "i", playerid);
+static KickEx(playerid) {
+	return SetTimerEx("DisconnectPlayer", 500, false, "i", playerid);
 }
 
-forward AC_DisconnectPlayer(playerid);
-public AC_DisconnectPlayer(playerid) {
-	return Kick(playerid);
+forward DisconnectPlayer(playerid);
+public DisconnectPlayer(playerid) {
+	return KickEx(playerid);
 }
 
-static AC_IsPlayerPaused(playerid) {
-	return (GetTickCount() - AC_Player[playerid][pLastUpdate] > 2000);
+static IsPlayerPaused(playerid) {
+	return (GetTickCount() - Player[playerid][pLastUpdate] > 2000);
 }
 
-static AC_CleanPlayerData(playerid) {
-	AC_Player[playerid][pMobileUser] = false;
-	AC_Player[playerid][pSuspicious] = false;
-	AC_Player[playerid][pLastUpdate] = 0;
-	AC_Player[playerid][pGarageTick] = 0;
-	AC_Player[playerid][pLastData] = 0;
-	AC_Player[playerid][pLastData] = 0;
-	AC_Player[playerid][pCooldown] += 10;
+static CleanPlayerData(playerid) {
+	Player[playerid][pMobileUser] = false;
+	Player[playerid][pSuspicious] = false;
+	Player[playerid][pLastUpdate] = 0;
+	Player[playerid][pGarageTick] = 0;
+	Player[playerid][pLastData] = 0;
+	Player[playerid][pLastData] = 0;
+	Player[playerid][pCooldown] += 10;
 	for (new i; i < 3; i++) {
-		AC_Player[playerid][pLastPos][i] = 0.0;
+		Player[playerid][pLastPos][i] = 0.0;
 	}
 	return true;
+}
+
+static GetPlayerSpeed(playerid) {
+    new Float:vel[3], Float:rtn;
+    GetPlayerVelocity(playerid, vel[0], vel[1], vel[2]);
+    rtn = floatsqroot(floatabs(floatpower(vel[0] + vel[1] + vel[2], 2)));
+    return floatround(rtn * 100 * 1.61 * 0.621371);
+}
+
+static GetVehicleSpeed(vehicleid) {
+	new Float:speed[3];
+	GetVehicleVelocity(vehicleid, speed[0], speed[1], speed[2]);
+	return floatround(floatsqroot((speed[0] * speed[0]) + (speed[1] * speed[1]) + (speed[2] * speed[2])) * 111.846814);
 }
 
 static IsPlayerInsidePaySpray(playerid) {
-	for (new i; i < sizeof(AC_Sprays); i++) if (IsPlayerInRangeOfPoint(playerid, 10.0, AC_Sprays[i][0], AC_Sprays[i][1], AC_Sprays[i][2])) {
+	for (new i; i < sizeof(Sprays); i++) if (IsPlayerInRangeOfPoint(playerid, 10.0, Sprays[i][0], Sprays[i][1], Sprays[i][2])) {
 		return true;
 	}
 	return false;
 }
 
 static IsPlayerInsideModGarage(playerid) {
-	for (new i; i < sizeof(AC_Garages); i++) if (IsPlayerInRangeOfPoint(playerid, 10.0, AC_Garages[i][0], AC_Garages[i][1], AC_Garages[i][2])) {
+	for (new i; i < sizeof(Garages); i++) if (IsPlayerInRangeOfPoint(playerid, 10.0, Garages[i][0], Garages[i][1], Garages[i][2])) {
 		return true;
 	}
 	return false;
 }
 
-static AC_Encode(input) {
+static Encode(input) {
     new result;
  
     #emit LOAD.S.pri input
@@ -561,126 +589,125 @@ static AC_Encode(input) {
 #else
 	#define _ALS_SetPlayerPos
 #endif
-#define SetPlayerPos(%0) AC_CHAIN_PUBLIC:AC_SetPlayerPos(%0)
-AC_CHAIN_FORWARD:AC_SetPlayerPos(playerid, Float:x, Float:y, Float:z) = 1;
+#define SetPlayerPos(%0) CHAIN_PUBLIC:SetPlayerPos(%0)
+CHAIN_FORWARD:SetPlayerPos(playerid, Float:x, Float:y, Float:z) = 1;
 
 #if defined _ALS_OnIncomingRPC
 	#undef OnIncomingRPC
 #else
 	#define _ALS_OnIncomingRPC
 #endif
-#define OnIncomingRPC(%0) AC_CHAIN_PUBLIC:AC_OnIncomingRPC(%0)
-AC_CHAIN_FORWARD:AC_OnIncomingRPC(playerid, rpcid, BitStream:bs) = 1;
+#define OnIncomingRPC(%0) CHAIN_PUBLIC:OnIncomingRPC(%0)
+CHAIN_FORWARD:OnIncomingRPC(playerid, rpcid, BitStream:bs) = 1;
 
 #if defined _ALS_OnIncomingPacket
 	#undef OnIncomingPacket
 #else
 	#define _ALS_OnIncomingPacket
 #endif
-#define OnIncomingPacket(%0) AC_CHAIN_PUBLIC:AC_OnIncomingPacket(%0)
-AC_CHAIN_FORWARD:AC_OnIncomingPacket(playerid, packetid, BitStream:bs) = 1;
+#define OnIncomingPacket(%0) CHAIN_PUBLIC:OnIncomingPacket(%0)
+CHAIN_FORWARD:OnIncomingPacket(playerid, packetid, BitStream:bs) = 1;
 
 #if defined _ALS_OnGameModeInit
 	#undef OnGameModeInit
 #else
 	#define _ALS_OnGameModeInit
 #endif
-#define OnGameModeInit(%0) AC_CHAIN_PUBLIC:AC_OnGameModeInit(%0)
-AC_CHAIN_FORWARD:AC_OnGameModeInit() = 1;
+#define OnGameModeInit(%0) CHAIN_PUBLIC:OnGameModeInit(%0)
+CHAIN_FORWARD:OnGameModeInit() = 1;
 
 #if defined _ALS_OnGameModeExit
 	#undef OnGameModeExit
 #else
 	#define _ALS_OnGameModeExit
 #endif
-#define OnGameModeExit(%0) AC_CHAIN_PUBLIC:AC_OnGameModeExit(%0)
-AC_CHAIN_FORWARD:AC_OnGameModeExit() = 1;
+#define OnGameModeExit(%0) CHAIN_PUBLIC:OnGameModeExit(%0)
+CHAIN_FORWARD:OnGameModeExit() = 1;
 
 #if defined _ALS_OnFilterScriptInit
 	#undef OnFilterScriptInit
 #else
 	#define _ALS_OnFilterScriptInit
 #endif
-#define OnFilterScriptInit(%0) AC_CHAIN_PUBLIC:AC_OnFilterScriptInit(%0)
-AC_CHAIN_FORWARD:AC_OnFilterScriptInit() = 1;
+#define OnFilterScriptInit(%0) CHAIN_PUBLIC:OnFilterScriptInit(%0)
+CHAIN_FORWARD:OnFilterScriptInit() = 1;
 
 #if defined _ALS_OnFilterScriptExit
 	#undef OnFilterScriptExit
 #else
 	#define _ALS_OnFilterScriptExit
 #endif
-#define OnFilterScriptExit(%0) AC_CHAIN_PUBLIC:AC_OnFilterScriptExit(%0)
-AC_CHAIN_FORWARD:AC_OnFilterScriptExit() = 1;
+#define OnFilterScriptExit(%0) CHAIN_PUBLIC:OnFilterScriptExit(%0)
+CHAIN_FORWARD:OnFilterScriptExit() = 1;
 
 #if defined _ALS_OnPlayerConnect
 	#undef OnPlayerConnect
 #else
 	#define _ALS_OnPlayerConnect
 #endif
-#define OnPlayerConnect(%0) AC_CHAIN_PUBLIC:AC_OnPlayerConnect(%0)
-AC_CHAIN_FORWARD:AC_OnPlayerConnect(playerid) = 1;
+#define OnPlayerConnect(%0) CHAIN_PUBLIC:OnPlayerConnect(%0)
+CHAIN_FORWARD:OnPlayerConnect(playerid) = 1;
 
 #if defined _ALS_OnPlayerDisconnect
 	#undef OnPlayerDisconnect
 #else
 	#define _ALS_OnPlayerDisconnect
 #endif
-#define OnPlayerDisconnect(%0) AC_CHAIN_PUBLIC:AC_OnPlayerDisconnect(%0)
-AC_CHAIN_FORWARD:AC_OnPlayerDisconnect(playerid, reason) = 1;
+#define OnPlayerDisconnect(%0) CHAIN_PUBLIC:OnPlayerDisconnect(%0)
+CHAIN_FORWARD:OnPlayerDisconnect(playerid, reason) = 1;
 
 #if defined _ALS_OnPlayerUpdate
 	#undef OnPlayerUpdate
 #else
 	#define _ALS_OnPlayerUpdate
 #endif
-#define OnPlayerUpdate(%0) AC_CHAIN_PUBLIC:AC_OnPlayerUpdate(%0)
-AC_CHAIN_FORWARD:AC_OnPlayerUpdate(playerid) = 1;
+#define OnPlayerUpdate(%0) CHAIN_PUBLIC:OnPlayerUpdate(%0)
+CHAIN_FORWARD:OnPlayerUpdate(playerid) = 1;
 
 #if defined _ALS_OnPlayerRequestClass
 	#undef OnPlayerRequestClass
 #else
 	#define _ALS_OnPlayerRequestClass
 #endif
-#define OnPlayerRequestClass(%0) AC_CHAIN_PUBLIC:AC_OnPlayerRequestClass(%0)
-AC_CHAIN_FORWARD:AC_OnPlayerRequestClass(playerid, classid) = 1;
+#define OnPlayerRequestClass(%0) CHAIN_PUBLIC:OnPlayerRequestClass(%0)
+CHAIN_FORWARD:OnPlayerRequestClass(playerid, classid) = 1;
 
 #if defined _ALS_OnPlayerSpawn
 	#undef OnPlayerSpawn
 #else
 	#define _ALS_OnPlayerSpawn
 #endif
-#define OnPlayerSpawn(%0) AC_CHAIN_PUBLIC:AC_OnPlayerSpawn(%0)
-AC_CHAIN_FORWARD:AC_OnPlayerSpawn(playerid) = 1;
+#define OnPlayerSpawn(%0) CHAIN_PUBLIC:OnPlayerSpawn(%0)
+CHAIN_FORWARD:OnPlayerSpawn(playerid) = 1;
 
 #if defined _ALS_OnClientCheckResponse
 	#undef OnClientCheckResponse
 #else
 	#define _ALS_OnClientCheckResponse
 #endif
-#define OnClientCheckResponse(%0) AC_CHAIN_PUBLIC:AC_OnClientCheckResponse(%0)
-AC_CHAIN_FORWARD:AC_OnClientCheckResponse(playerid, actionid, memaddr, retndata) = 1;
+#define OnClientCheckResponse(%0) CHAIN_PUBLIC:OnClientCheckResponse(%0)
+CHAIN_FORWARD:OnClientCheckResponse(playerid, actionid, memaddr, retndata) = 1;
 
 #if defined _ALS_OnPlayerWeaponShot
 	#undef OnPlayerWeaponShot
 #else
 	#define _ALS_OnPlayerWeaponShot
 #endif
-#define OnPlayerWeaponShot(%0) AC_CHAIN_PUBLIC:AC_OnPlayerWeaponShot(%0)
-AC_CHAIN_FORWARD:AC_OnPlayerWeaponShot(playerid, WEAPON:weaponid, BULLET_HIT_TYPE:hittype, hitid, Float:fX, Float:fY, Float:fZ) = 1;
+#define OnPlayerWeaponShot(%0) CHAIN_PUBLIC:OnPlayerWeaponShot(%0)
+CHAIN_FORWARD:OnPlayerWeaponShot(playerid, WEAPON:weaponid, BULLET_HIT_TYPE:hittype, hitid, Float:fX, Float:fY, Float:fZ) = 1;
 
 #if defined _ALS_OnPlayerGiveDamage
 	#undef OnPlayerGiveDamage
 #else
 	#define _ALS_OnPlayerGiveDamage
 #endif
-#define OnPlayerGiveDamage(%0) AC_CHAIN_PUBLIC:AC_OnPlayerGiveDamage(%0)
-AC_CHAIN_FORWARD:AC_OnPlayerGiveDamage(playerid, damagedid, Float:amount, WEAPON:weaponid, bodypart) = 1;
+#define OnPlayerGiveDamage(%0) CHAIN_PUBLIC:OnPlayerGiveDamage(%0)
+CHAIN_FORWARD:OnPlayerGiveDamage(playerid, damagedid, Float:amount, WEAPON:weaponid, bodypart) = 1;
 
 #if defined _ALS_SetPlayerPos
 	#undef SetPlayerPos
 #else
 	#define _ALS_SetPlayerPos
 #endif
-#define SetPlayerPos(%0) AC_CHAIN_PUBLIC:AC_SetPlayerPos(%0)
-AC_CHAIN_FORWARD:AC_SetPlayerPos(playerid, Float:x, Float:y, Float:z) = 1;
-
+#define SetPlayerPos(%0) CHAIN_PUBLIC:SetPlayerPos(%0)
+CHAIN_FORWARD:SetPlayerPos(playerid, Float:x, Float:y, Float:z) = 1;
